@@ -56,13 +56,21 @@ const Wrapper = styled.article`
   .content {
     padding: 1rem 1.5rem;
   }
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
+  .content-center {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+    @media (min-width: 576px) {
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (min-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 1120px) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
+
   .status {
     border-radius: var(--borderRadius);
     text-transform: capitalize;
@@ -71,7 +79,9 @@ const Wrapper = styled.article`
     width: 100px;
     height: 30px;
   }
-
+  footer {
+    margin-top: 1rem;
+  }
   .edit-btn,
   .delete-btn {
     letter-spacing: var(--letterSpacing);

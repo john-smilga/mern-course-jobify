@@ -17,7 +17,7 @@ const Job = ({
   const { setEditJob, deleteJob } = useAppContext()
 
   let date = moment(createdAt)
-  date = date.format('MMMM Do, YYYY')
+  date = date.format('MMM Do, YYYY')
 
   return (
     <Wrapper>
@@ -31,8 +31,8 @@ const Job = ({
       <div className='content'>
         <div className='content-center'>
           <JobInfo icon={<FaLocationArrow />} text={jobLocation} />
-          <JobInfo icon={<FaBriefcase />} text={jobType} />
           <JobInfo icon={<FaCalendarAlt />} text={date} />
+          <JobInfo icon={<FaBriefcase />} text={jobType} />
           <div className={`status ${status}`}>{status}</div>
         </div>
         <footer>

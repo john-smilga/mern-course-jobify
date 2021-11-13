@@ -6,8 +6,10 @@
   "scripts": {
     "build-client": "cd client && npm run build",
     "install-client": "cd client && npm install",
+    "install-server": "npm install",
+    "install-dependencies": " npm run install-client && npm run install-server ",
     "heroku-postbuild": "npm run install-client && npm run build-client",
-    "server": "nodemon app.js",
+    "server": "nodemon app.js n --ignore client",
     "client": "cd client && npm run start",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
@@ -15,7 +17,6 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "concurrently": "^6.3.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
@@ -32,6 +33,7 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
+    "concurrently": "^6.4.0",
     "nodemon": "^2.0.9"
   },
   "engines": {

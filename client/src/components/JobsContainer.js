@@ -33,7 +33,7 @@ const JobsContainer = () => {
   return (
     <Wrapper>
       <h5>
-        showing {totalJobs} job{jobs.length > 1 && 's'}
+        {totalJobs} job{jobs.length > 1 && 's'} found
       </h5>
       <div className='jobs'>
         {jobs.map((job) => {

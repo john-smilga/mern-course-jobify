@@ -56,13 +56,13 @@ const Wrapper = styled.article`
   .content {
     padding: 1rem 1.5rem;
   }
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
+  .content-center {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1rem;
+    row-gap: 0.5rem;
   }
+
   .status {
     border-radius: var(--borderRadius);
     text-transform: capitalize;
@@ -71,7 +71,9 @@ const Wrapper = styled.article`
     width: 100px;
     height: 30px;
   }
-
+  footer {
+    margin-top: 1rem;
+  }
   .edit-btn,
   .delete-btn {
     letter-spacing: var(--letterSpacing);

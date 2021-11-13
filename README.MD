@@ -6,7 +6,7 @@ Project in Action - [Jobify](https://www.jobify.live/)
 
 #### Support
 
-Find the App Useful? [Buy Me a Coffee](https://www.buymeacoffee.com/johnsmilga)
+Find the App Useful? [you can always buy me a coffee](https://www.buymeacoffee.com/johnsmilga)
 
 #### Run The App Locally
 

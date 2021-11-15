@@ -25,7 +25,7 @@ npm start
 
 #### Setup React App
 
-- create 'client' folder
+- create <b>client</b> folder
 - open terminal
 
 ```sh
@@ -82,18 +82,29 @@ npm install normalize.css
 
 #### Landing Page
 
+- zoom level 175%
 - markdown preview extension
 - get something on the screen
 - react router and styled components right after
 - create pages directory in the source
 - for now Landing.js
 - create component (snippets extension)
-- setup basic return (h1 landing page)
-- import main image
+- setup basic return
+
+```js
+<h4>Landing Page<h4>
+```
+
+- import logo.svg and main.svg
 - import Landing in App.js and render
 
 #### Styled Components
 
+- CSS in JS
+- Styled Components
+- have logic and styles in component
+- no name collisions
+- apply javascript logic
 - [Styled Components Docs](https://styled-components.com/)
 - [Styled Components Course](https://www.udemy.com/course/styled-components-tutorial-and-project-course/?referralCode=9DABB172FCB2625B663F)
 
@@ -129,6 +140,19 @@ const Component = () => {
 - only responsible for styling
 - wrappers folder in assets
 
+#### Logo and Images
+
+- logo built in Figma
+- [Cool Images](https://undraw.co/)
+
+#### Logo
+
+- create <b>components</b> folder in source
+- create Logo.js
+- move import and image logic
+- export as default
+- utilize index.js
+
 #### React Router
 
 - Version 6
@@ -138,10 +162,13 @@ const Component = () => {
 npm install history@5 react-router-dom@6
 ```
 
+- import four components
+
 ```js
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 ```
 
+- Connect to browser's URL with BrowserRouter
 - Routes instead of Switch
 
 ```js
@@ -153,7 +180,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
       <Route path="/landing" element={<Landing />} />
       <Route path="*" element={<div>Error</div>}>
     </Routes>
-  </BrowserRouter>
+</BrowserRouter>
 
 ```
 

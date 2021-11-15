@@ -10,19 +10,36 @@ Find the App Useful? [You can always buy me a coffee](https://www.buymeacoffee.c
 
 #### Run The App Locally
 
-- npm run install-dependencies
+```sh
+npm run install-dependencies
+```
+
 - rename .env.temp to .env
 - setup values for - MONGO_URL, JWT_SECRET, JWT_LIFETIME
-- npm start
+
+```sh
+npm start
+```
+
 - visit url http://localhost:3000/
 
 #### Setup React App
 
 - create 'client' folder
 - open terminal
-- cd client
-- npx create-react-app .
-- npm start
+
+```sh
+cd client
+```
+
+```sh
+npx create-react-app .
+```
+
+```sh
+npm start
+```
+
 - set editor/browser side by side
 - copy/paste assets from complete project
 
@@ -40,7 +57,7 @@ Find the App Useful? [You can always buy me a coffee](https://www.buymeacoffee.c
 
 - change title in public/index.html
 - replace favicon.ico in public
-- resource (favicons)[https://favicon.io/]
+- resource [Generate Favicons](https://favicon.io/)
 
 #### Normalize.css and Global Styles
 
@@ -50,22 +67,100 @@ Find the App Useful? [You can always buy me a coffee](https://www.buymeacoffee.c
 - speeds up the development
 - normalize.css
 - small CSS file that provides cross-browser consistency in the default styling of HTML elements.
-- (normalize)[https://necolas.github.io/normalize.css/]
-- npm install normalize.css
+- [normalize docs](https://necolas.github.io/normalize.css/)
+
+```sh
+npm install normalize.css
+```
+
 - import 'normalize.css' in index.js
 - SET BEFORE 'index.css'
 - replace contents of index.css
 - if any questions about normalize or specific styles
-- Coding Addict (Default Starter)[https://youtu.be/UDdyGNlQK5w]
-- Repo (Default Starter)[https://github.com/john-smilga/default-starter]
+- Coding Addict - [Default Starter Video](https://youtu.be/UDdyGNlQK5w)
+- Repo - [Default Starter Repo](https://github.com/john-smilga/default-starter)
 
 #### Landing Page
 
+- markdown preview extension
 - get something on the screen
-- react router and styled components
+- react router and styled components right after
 - create pages directory in the source
 - for now Landing.js
-- create component (extension)
+- create component (snippets extension)
 - setup basic return (h1 landing page)
 - import main image
-- import in App.js and render
+- import Landing in App.js and render
+
+#### Styled Components
+
+- [Styled Components Docs](https://styled-components.com/)
+- [Styled Components Course](https://www.udemy.com/course/styled-components-tutorial-and-project-course/?referralCode=9DABB172FCB2625B663F)
+
+```sh
+npm install styled-components
+```
+
+```js
+import styled from 'styled-components'
+
+const El = styled.el`
+  // styles go here
+`
+```
+
+- no name collisions, since unique class
+- vscode-styled-components extension
+- colors and bugs
+- style entire react component
+
+```js
+const Wrapper = styled.el``
+
+const Component = () => {
+  return (
+    <Wrapper>
+      <h1> Component</h1>
+    </Wrapper>
+  )
+}
+```
+
+- only responsible for styling
+- wrappers folder in assets
+
+#### React Router
+
+- Version 6
+- [React Router Docs](https://reactrouter.com/docs/en/v6)
+
+```sh
+npm install history@5 react-router-dom@6
+```
+
+```js
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+```
+
+- Routes instead of Switch
+
+```js
+
+<BrowserRouter>
+    <Routes>
+      <Route path="/" element={<div>Dashboard</div>} />
+      <Route path="/register" element={<div>Register</div>} />
+      <Route path="/landing" element={<Landing />} />
+      <Route path="*" element={<div>Error</div>}>
+    </Routes>
+  </BrowserRouter>
+
+```
+
+```js
+<nav>
+  <Link to='/'>Dashboard</Link>
+  <Link to='/register'>Register</Link>
+  <Link to='/landing'>Home</Link>
+</nav>
+```

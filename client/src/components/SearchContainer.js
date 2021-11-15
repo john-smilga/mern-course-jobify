@@ -1,3 +1,4 @@
+import e from 'cors'
 import { FormRow, FormRowSelect } from '.'
 import { useAppContext } from '../context/appContext'
 import Wrapper from '../wrappers/SearchContainer'
@@ -18,6 +19,10 @@ const SearchContainer = () => {
     // mention page handle change reducer
     if (isLoading) return
     handleChange({ name: e.target.name, value: e.target.value })
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    clearFilters()
   }
   return (
     <Wrapper>
@@ -60,7 +65,7 @@ const SearchContainer = () => {
           <button
             className='btn btn-block btn-danger'
             disabled={isLoading}
-            onClick={clearFilters}
+            onClick={handleSubmit}
           >
             clear filters
           </button>

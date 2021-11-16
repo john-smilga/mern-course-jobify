@@ -9,7 +9,7 @@
     "install-server": "npm install",
     "install-dependencies": " npm run install-client && npm run install-server ",
     "heroku-postbuild": "npm run install-client && npm run build-client",
-    "server": "nodemon app.js n --ignore client",
+    "server": "nodemon app.js --ignore client",
     "client": "cd client && npm run start",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },

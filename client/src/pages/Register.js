@@ -50,58 +50,48 @@ function Register() {
   return (
     <>
       <Wrapper className='page full-page'>
-        <div className='container'>
-          <form className='form' onSubmit={onSubmit}>
-            <Logo />
-            <h3>{values.isMember ? 'Login' : 'Register'}</h3>
-            {/* alert */}
-            {showAlert && <Alert />}
-            {/* name field */}
-            {!values.isMember && (
-              <FormRow
-                type='text'
-                name='name'
-                value={values.name}
-                handleChange={handleChange}
-              />
-            )}
+        <form className='form' onSubmit={onSubmit}>
+          <Logo />
+          <h3>{values.isMember ? 'Login' : 'Register'}</h3>
+          {/* alert */}
+          {showAlert && <Alert />}
+          {/* name field */}
+          {!values.isMember && (
+            <FormRow
+              type='text'
+              name='name'
+              value={values.name}
+              handleChange={handleChange}
+            />
+          )}
 
-            {/* single form row */}
-            <FormRow
-              type='email'
-              name='email'
-              value={values.email}
-              handleChange={handleChange}
-            />
-            {/* end of single form row */}
-            {/* single form row */}
-            <FormRow
-              type='password'
-              name='password'
-              value={values.password}
-              handleChange={handleChange}
-            />
-            {/* end of single form row */}
-            <button
-              type='submit'
-              className='btn btn-block'
-              disabled={isLoading}
-            >
-              {isLoading ? 'Please wait...' : 'Submit'}
+          {/* single form row */}
+          <FormRow
+            type='email'
+            name='email'
+            value={values.email}
+            handleChange={handleChange}
+          />
+          {/* end of single form row */}
+          {/* single form row */}
+          <FormRow
+            type='password'
+            name='password'
+            value={values.password}
+            handleChange={handleChange}
+          />
+          {/* end of single form row */}
+          <button type='submit' className='btn btn-block' disabled={isLoading}>
+            {isLoading ? 'Please wait...' : 'Submit'}
+          </button>
+          <p>
+            {values.isMember ? 'Not a member yet?' : 'Already a member?'}
+
+            <button type='button' onClick={toggleMember} className='member-btn'>
+              {values.isMember ? 'Register' : 'Login'}
             </button>
-            <p>
-              {values.isMember ? 'Not a member yet?' : 'Already a member?'}
-
-              <button
-                type='button'
-                onClick={toggleMember}
-                className='member-btn'
-              >
-                {values.isMember ? 'Register' : 'Login'}
-              </button>
-            </p>
-          </form>
-        </div>
+          </p>
+        </form>
       </Wrapper>
     </>
   )

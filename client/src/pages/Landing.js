@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import main from '../assets/images/main.svg'
 import { Navigate } from 'react-router-dom'
 import { useAppContext } from '../context/appContext'
-import Wrapper from '../wrappers/LandingPage'
+import Wrapper from '../assets/wrappers/LandingPage'
 
 import Logo from '../components/Logo'
 function Home() {

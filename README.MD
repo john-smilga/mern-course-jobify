@@ -191,3 +191,114 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
   <Link to='/landing'>Home</Link>
 </nav>
 ```
+
+- go to Landing.js
+
+```js
+import { Link } from 'react-router-dom'
+
+return (
+  <Link to='/register' className='btn btn-hero'>
+    Login / Register
+  </Link>
+)
+```
+
+#### Setup Pages
+
+- create Error, Register, Dashboard pages
+- basic return
+- create index.js
+- import all the pages
+- export one by one
+- basically the same, as in components
+- import App.js
+- add to element={}
+- remove temp navbar
+
+#### Error Page
+
+```js
+import { Link } from 'react-router-dom'
+import img from '../assets/images/not-found.svg'
+import Wrapper from '../assets/wrappers/ErrorPage'
+
+return (
+  <Wrapper className='full-page'>
+    <div>
+      <img src={img} alt='not found' />
+      <h3>text</h3>
+      <p>text</p>
+      <Link to='/'>back home</Link>
+    </div>
+  </Wrapper>
+)
+```
+
+#### Auto Imports
+
+- use while developing
+- only sparingly while recording
+- better picture
+- messes with flow
+- just my preference
+- still use them, just not all the time
+
+#### Register Page - Setup
+
+```js
+import { useState, useEffect } from 'react'
+import { Logo } from '../components'
+import Wrapper from '../assets/wrappers/RegisterPage'
+// global context and useNavigate later
+
+const initialState = {
+  name: '',
+  email: '',
+  password: '',
+  isMember: true,
+}
+function Register() {
+  const [values, setValues] = useState(initialState)
+
+  // global context and useNavigate later
+
+  const handleChange = (e) => {
+    console.log(e.target)
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    console.log(e.target)
+  }
+  return (
+    <>
+      <Wrapper className='full-page'>
+        <form className='form' onSubmit={onSubmit}>
+          <Logo />
+          <h3>Login</h3>
+
+          {/* name field */}
+          <div className='form-row'>
+            <label htmlFor='name' className='form-label'>
+              name
+            </label>
+
+            <input
+              type='text'
+              value={values.name}
+              name='name'
+              onChange={handleChange}
+              className='form-input'
+            />
+          </div>
+
+          <button type='submit' className='btn btn-block'>
+            submit
+          </button>
+        </form>
+      </Wrapper>
+    </>
+  )
+}
+```

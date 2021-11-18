@@ -3,7 +3,7 @@ import { useAppContext } from '../context/appContext'
 import links from '../utils/links'
 import { NavLink } from 'react-router-dom'
 import Logo from './Logo'
-import Wrapper from '../wrappers/SmallSidebar'
+import Wrapper from '../assets/wrappers/SmallSidebar'
 
 export const SmallSidebar = () => {
   const { showSidebar, toggleSidebar } = useAppContext()

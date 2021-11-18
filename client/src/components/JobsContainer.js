@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import Loading from './Loading'
 import Job from './Job'
 import PageBtnContainer from './PageBtnContainer'
-import Wrapper from '../wrappers/JobsContainer'
+import Wrapper from '../assets/wrappers/JobsContainer'
 const JobsContainer = () => {
   const {
     getJobs,

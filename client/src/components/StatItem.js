@@ -1,4 +1,4 @@
-import Wrapper from '../wrappers/StatItem'
+import Wrapper from '../assets/wrappers/StatItem'
 
 function StatItem({ count, title, icon, color, bcg }) {
   return (

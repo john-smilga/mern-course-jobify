@@ -2,7 +2,7 @@ import { useAppContext } from '../context/appContext'
 import { NavLink } from 'react-router-dom'
 import links from '../utils/links'
 import Logo from '../components/Logo'
-import Wrapper from '../wrappers/BigSidebar'
+import Wrapper from '../assets/wrappers/BigSidebar'
 const BigSidebar = () => {
   const { showSidebar } = useAppContext()
   return (

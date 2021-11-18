@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa'
 import { useAppContext } from '../context/appContext'
 import Logo from './Logo'
-import Wrapper from '../wrappers/Navbar'
+import Wrapper from '../assets/wrappers/Navbar'
 const Navbar = () => {
   const { user, logoutUser, toggleSidebar } = useAppContext()
   const [showLogout, setShowLogout] = useState(false)

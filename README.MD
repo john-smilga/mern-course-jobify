@@ -352,8 +352,46 @@ export default Alert
 - alert-danger or alert-success
 - eventually setup in global context
 - showAlert in initialState (true || false)
-- right after login
+- right after h3 login
 
 ```js
-showAlert && <Alert />
+values.showAlert && <Alert />
+```
+
+#### Toggle Member
+
+```js
+const toggleMember = () => {
+  setValues({ ...values, isMember: !values.isMember })
+}
+
+return (
+  <Wrapper>
+    {/* control h3 */}
+
+    <h3>{values.isMember ? 'Login' : 'Register'}</h3>
+
+    {/* toggle name */}
+
+    {!values.isMember && (
+      <FormRow
+        type='text'
+        name='name'
+        value={values.name}
+        handleChange={handleChange}
+      />
+    )}
+
+    {/* right after submit btn */}
+    {/* toggle button */}
+
+    <p>
+      {values.isMember ? 'Not a member yet?' : 'Already a member?'}
+
+      <button type='button' onClick={toggleMember} className='member-btn'>
+        {values.isMember ? 'Register' : 'Login'}
+      </button>
+    </p>
+  </Wrapper>
+)
 ```

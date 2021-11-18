@@ -404,7 +404,7 @@ return (
 - appContext.js
 
 ```js
-import { useState, useReducer, useContext } from 'react'
+import React, { useState, useReducer, useContext } from 'react'
 
 export const initialState = {
   isLoading: false,
@@ -458,3 +458,67 @@ const { isLoading, showAlert } = useAppContext()
 ```
 
 - switch to global showAlert
+
+#### Wire Up Reducer
+
+```js
+reducer.js
+
+const reducer = (state, action) => {
+  throw new Error(`no such action :${action.type}`)
+}
+```
+
+```js
+appContext.js
+
+import reducer from './reducer'
+
+const [state, dispatch] = useReducer(reducer, initialState)
+```
+
+#### Display Alert
+
+```js
+actions
+
+export const DISPLAY_ALERT = 'SHOW_ALERT'
+```
+
+- setup imports (reducer and appContext)
+
+```js
+appContext
+
+const displayAlert() =>{
+  dispatch({type:DISPLAY_ALERT})
+}
+
+```
+
+```js
+reducer
+
+if (action.type === DISPLAY_ALERT) {
+  return {
+    ...state,
+    showAlert: true,
+    alertType: 'danger',
+    alertText: 'Please provide all values!',
+  }
+}
+```
+
+```js
+Alert Component
+
+import {useAppContext} from '../context/appContext'
+
+const Alert = () =>{
+  const {alertType,alertText} = useAppContext()
+  return <div className={`alert alert-${alertType}`}>
+  {alertText}
+  </div>
+}
+
+```

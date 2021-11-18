@@ -473,6 +473,7 @@ reducer.js
 const reducer = (state, action) => {
   throw new Error(`no such action :${action.type}`)
 }
+export default reducer
 ```
 
 ```js
@@ -486,7 +487,7 @@ const [state, dispatch] = useReducer(reducer, initialState)
 #### Display Alert
 
 ```js
-actions
+actions.js
 
 export const DISPLAY_ALERT = 'SHOW_ALERT'
 ```
@@ -494,7 +495,7 @@ export const DISPLAY_ALERT = 'SHOW_ALERT'
 - setup imports (reducer and appContext)
 
 ```js
-appContext
+appContext.js
 
 const displayAlert() =>{
   dispatch({type:DISPLAY_ALERT})
@@ -503,7 +504,7 @@ const displayAlert() =>{
 ```
 
 ```js
-reducer
+reducer.js
 
 if (action.type === DISPLAY_ALERT) {
   return {
@@ -516,15 +517,40 @@ if (action.type === DISPLAY_ALERT) {
 ```
 
 ```js
-Alert Component
+Alert.js in Components
 
-import {useAppContext} from '../context/appContext'
+import { useAppContext } from '../context/appContext'
 
-const Alert = () =>{
-  const {alertType,alertText} = useAppContext()
-  return <div className={`alert alert-${alertType}`}>
-  {alertText}
-  </div>
+const Alert = () => {
+  const { alertType, alertText } = useAppContext()
+  return <div className={`alert alert-${alertType}`}>{alertText}</div>
 }
+```
 
+#### Display Alert
+
+- [JS Nuggets - Dynamic Object Keys](https://youtu.be/_qxCYtWm0tw)
+
+```js
+appContext.js
+
+const handleChange = (e) => {
+  setValues({ ...values, [e.target.name]: e.target.value })
+}
+```
+
+- get displayAlert function
+
+```js
+appContext.js
+
+const onSubmit = (e) => {
+  e.preventDefault()
+  const { name, email, password, isMember } = values
+  if (!email || !password || (!isMember && !name)) {
+    displayAlert()
+    return
+  }
+  console.log(values)
+}
 ```

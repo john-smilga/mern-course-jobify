@@ -404,6 +404,8 @@ return (
 - appContext.js
 
 ```js
+import { useState, useReducer, useContext } from 'react'
+
 export const initialState = {
   isLoading: false,
   showAlert: false,
@@ -454,3 +456,5 @@ import { useAppContext } from '../context/appContext'
 
 const { isLoading, showAlert } = useAppContext()
 ```
+
+- switch to global showAlert

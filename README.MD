@@ -395,3 +395,62 @@ return (
   </Wrapper>
 )
 ```
+
+#### Global Context
+
+- in src create <b>context</b> directory
+- actions.js
+- reducer.js
+- appContext.js
+
+```js
+export const initialState = {
+  isLoading: false,
+  showAlert: false,
+  alertText: '',
+  alertType: '',
+}
+const AppContext = React.createContext()
+const AppProvider = ({ children }) => {
+  const [state, setState] = useState(initialState)
+
+  return (
+    <AppContext.Provider
+      value={{
+        ...state,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  )
+}
+// make sure use
+export const useAppContext = () => {
+  return useContext(AppContext)
+}
+
+export { AppProvider }
+```
+
+- index.js
+
+```js
+import { AppProvider } from './context/appContext'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <AppProvider>
+      <App />
+    </AppProvider>
+  </React.StrictMode>,
+  document.getElementById('root')
+)
+```
+
+- Register.js
+
+```js
+import { useAppContext } from '../context/appContext'
+
+const { isLoading, showAlert } = useAppContext()
+```

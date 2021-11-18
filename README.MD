@@ -334,3 +334,26 @@ const FormRow = ({ type, name, value, handleChange, labelText }) => {
 
 export default FormRow
 ```
+
+#### Alert Component
+
+- right away setup as component
+- create Alert.js in <b>components</b>
+
+```js
+const Alert = () => {
+  return <div className='alert alert-danger'>alert goes here</div>
+}
+
+export default Alert
+```
+
+- setup import/export
+- alert-danger or alert-success
+- eventually setup in global context
+- showAlert in initialState (true || false)
+- right after login
+
+```js
+showAlert && <Alert />
+```

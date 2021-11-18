@@ -272,33 +272,31 @@ function Register() {
     console.log(e.target)
   }
   return (
-    <>
-      <Wrapper className='full-page'>
-        <form className='form' onSubmit={onSubmit}>
-          <Logo />
-          <h3>Login</h3>
+    <Wrapper className='full-page'>
+      <form className='form' onSubmit={onSubmit}>
+        <Logo />
+        <h3>Login</h3>
 
-          {/* name field */}
-          <div className='form-row'>
-            <label htmlFor='name' className='form-label'>
-              name
-            </label>
+        {/* name field */}
+        <div className='form-row'>
+          <label htmlFor='name' className='form-label'>
+            name
+          </label>
 
-            <input
-              type='text'
-              value={values.name}
-              name='name'
-              onChange={handleChange}
-              className='form-input'
-            />
-          </div>
+          <input
+            type='text'
+            value={values.name}
+            name='name'
+            onChange={handleChange}
+            className='form-input'
+          />
+        </div>
 
-          <button type='submit' className='btn btn-block'>
-            submit
-          </button>
-        </form>
-      </Wrapper>
-    </>
+        <button type='submit' className='btn btn-block'>
+          submit
+        </button>
+      </form>
+    </Wrapper>
   )
 }
 ```

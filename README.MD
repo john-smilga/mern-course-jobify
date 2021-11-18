@@ -246,6 +246,8 @@ return (
 
 #### Register Page - Setup
 
+- show preview in Browser and themes
+
 ```js
 import { useState, useEffect } from 'react'
 import { Logo } from '../components'
@@ -258,6 +260,9 @@ const initialState = {
   password: '',
   isMember: true,
 }
+// if possible prefer local state
+// global state
+
 function Register() {
   const [values, setValues] = useState(initialState)
 
@@ -299,4 +304,33 @@ function Register() {
     </Wrapper>
   )
 }
+```
+
+#### FormRow Component
+
+- create FormRow.js in <b>components</b>
+- setup import/export
+- setup one for email and password
+- hint "type,name,value"
+
+```js
+const FormRow = ({ type, name, value, handleChange, labelText }) => {
+  return (
+    <div className='form-row'>
+      <label htmlFor={name} className='form-label'>
+        {labelText || name}
+      </label>
+
+      <input
+        type={type}
+        value={value}
+        name={name}
+        onChange={handleChange}
+        className='form-input'
+      />
+    </div>
+  )
+}
+
+export default FormRow
 ```

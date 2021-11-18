@@ -459,6 +459,12 @@ const { isLoading, showAlert } = useAppContext()
 
 - switch to global showAlert
 
+#### useReducer
+
+- [React Tutorial](https://youtu.be/iZhV0bILFb0)
+- useReducer vs Redux
+- multiple reducers vs one
+
 #### Wire Up Reducer
 
 ```js

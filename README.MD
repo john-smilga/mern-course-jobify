@@ -554,3 +554,47 @@ const onSubmit = (e) => {
   console.log(values)
 }
 ```
+
+#### Clear Alert
+
+- technically optional
+
+```js
+actions.js
+
+export const CLEAR_ALERT = 'CLEAR_ALERT'
+```
+
+- setup imports (reducer and appContext)
+
+```js
+reducer.js
+
+if (action.type === CLEAR_ALERT) {
+  return {
+    ...state,
+    showAlert: false,
+    alertType: '',
+    alertText: '',
+  }
+}
+```
+
+```js
+appContext.js
+
+const displayAlert = () => {
+  dispatch({
+    type: DISPLAY_ALERT,
+  })
+  clearAlert()
+}
+
+const clearAlert = () => {
+  setTimeout(() => {
+    dispatch({
+      type: CLEAR_ALERT,
+    })
+  }, 3000)
+}
+```

@@ -598,3 +598,33 @@ const clearAlert = () => {
   }, 3000)
 }
 ```
+
+#### Setup Server
+
+- stop the dev server in client
+- cd ..
+- start setting up our server
+- setup package.json
+
+```sh
+npm init -y
+```
+
+- create server.js
+- console.log('server running...')
+
+```sh
+node server
+```
+
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-

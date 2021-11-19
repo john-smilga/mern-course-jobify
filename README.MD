@@ -617,6 +617,28 @@ npm init -y
 node server
 ```
 
+#### ES6 vs CommonJS
+
+```js
+CommonJS
+const express = require('express')
+const app = express()
+```
+
+```js
+ES6
+import express from 'express'
+const app = express()
+```
+
+- file extension .mjs
+
+```js
+package.json
+
+"type":"module"
+```
+
 -
 -
 -

@@ -1,4 +1,4 @@
-const { StatusCodes } = require('http-status-codes')
+import { StatusCodes } from 'http-status-codes'
 const errorHandlerMiddleware = (err, req, res, next) => {
   // console.log(err)
   let customError = {
@@ -29,4 +29,4 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   return res.status(customError.statusCode).json({ msg: customError.msg })
 }
 
-module.exports = errorHandlerMiddleware
+export default errorHandlerMiddleware

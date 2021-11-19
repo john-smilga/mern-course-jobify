@@ -1,23 +1,26 @@
-require('dotenv').config()
-require('express-async-errors')
-const path = require('path')
+import dotenv from 'dotenv'
+dotenv.config()
+import('express-async-errors')
 
-const express = require('express')
+import path from 'path'
+import express from 'express'
 const app = express()
 
-const helmet = require('helmet')
-const xss = require('xss-clean')
-const cors = require('cors')
-const mongoSanitize = require('express-mongo-sanitize')
+import helmet from 'helmet'
+import xss from 'xss-clean'
+import cors from 'cors'
+import mongoSanitize from 'express-mongo-sanitize'
 
-const connectDB = require('./db/connect')
-const authenticateUser = require('./middleware/authentication')
+import connectDB from './db/connect.js'
+import authenticateUser from './middleware/authentication.js'
+
 // routers
-const authRouter = require('./routes/auth')
-const jobsRouter = require('./routes/jobs')
+import authRouter from './routes/auth.js'
+import jobsRouter from './routes/jobs.js'
+
 // error handler
-const notFoundMiddleware = require('./middleware/not-found')
-const errorHandlerMiddleware = require('./middleware/error-handler')
+import notFoundMiddleware from './middleware/not-found.js'
+import errorHandlerMiddleware from './middleware/error-handler.js'
 
 app.use(express.json())
 app.use(helmet())

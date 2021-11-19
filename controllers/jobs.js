@@ -1,8 +1,8 @@
-const Job = require('../models/Job')
-const { StatusCodes } = require('http-status-codes')
-const { BadRequestError, NotFoundError } = require('../errors')
-const mongoose = require('mongoose')
-const moment = require('moment')
+import Job from '../models/Job.js'
+import { StatusCodes } from 'http-status-codes'
+import { BadRequestError, NotFoundError } from '../errors/index.js'
+import mongoose from 'mongoose'
+import moment from 'moment'
 
 const getAllJobs = async (req, res) => {
   const { search, status, jobType, sort } = req.query
@@ -144,10 +144,4 @@ const showStats = async (req, res) => {
   res.status(StatusCodes.OK).json({ defaultStats, monthlyApplications })
 }
 
-module.exports = {
-  createJob,
-  deleteJob,
-  getAllJobs,
-  updateJob,
-  showStats,
-}
+export { createJob, deleteJob, getAllJobs, updateJob, showStats }

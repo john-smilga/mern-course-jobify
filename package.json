@@ -2,14 +2,15 @@
   "name": "06-jobs-api",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "build-client": "cd client && npm run build",
     "install-client": "cd client && npm install",
     "install-server": "npm install",
     "install-dependencies": " npm run install-client && npm run install-server ",
     "heroku-postbuild": "npm run install-client && npm run build-client",
-    "server": "nodemon app.js --ignore client",
+    "server": "nodemon server.js --ignore client",
     "client": "cd client && npm run start",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },

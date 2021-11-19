@@ -1,6 +1,6 @@
-const User = require('../models/User')
-const { StatusCodes } = require('http-status-codes')
-const { BadRequestError, UnauthenticatedError } = require('../errors')
+import User from '../models/User.js'
+import { StatusCodes } from 'http-status-codes'
+import { BadRequestError, UnauthenticatedError } from '../errors/index.js'
 
 const register = async (req, res) => {
   const { email, password, name } = req.body
@@ -81,8 +81,4 @@ const updateUser = async (req, res) => {
   })
 }
 
-module.exports = {
-  register,
-  login,
-  updateUser,
-}
+export { register, login, updateUser }

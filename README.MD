@@ -671,6 +671,42 @@ const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`Server is listening on port ${port}...`))
 ```
 
+#### NotFound and Error Middleware
+
+- if you watched my node/express you can re-use the same setup
+- in the root create <b>middleware</b>folder
+- error-handler.js
+- not-found.js
+
+```js
+not - found.js
+
+const notFound = (req, res) => res.status(404).send('Route does not exist')
+
+export default NotFound
+```
+
+```js
+error - handler.js
+
+const errorHandlerMiddleware = (err, req, res, next) => {
+  console.log(err)
+  return res.status(500).json({ msg: 'there was an error' })
+}
+
+export default errorHandlerMiddleware
+```
+
+```js
+server.js
+
+import notFoundMiddleware from './middleware/not-found'
+import errorHandlerMiddleware from './middleware/error-handler'
+
+app.use(notFoundMiddleware)
+app.use(errorHandlerMiddleware)
+```
+
 -
 -
 -

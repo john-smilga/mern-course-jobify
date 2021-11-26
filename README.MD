@@ -1706,8 +1706,304 @@ if (isMember) {
 }
 
 return (
-  <button type='submit' className='btn btn-block' disable={isLoading}>
+  <button type='submit' className='btn btn-block' disabled={isLoading}>
     submit
   </button>
 )
+```
+
+#### Axios
+
+- [axios docs](https://axios-http.com/docs/intro)
+- stop app
+- cd client
+
+```sh
+npm install axios
+```
+
+- cd ..
+- restart app
+
+#### Register User - Complete
+
+```js
+appContext.js
+
+import axios from 'axios'
+
+const registerUser = async (currentUser) => {
+  dispatch({ type: REGISTER_USER_BEGIN })
+  try {
+    const response = await axios.post('/api/v1/auth/register', currentUser)
+    console.log(response)
+    const { user, token, location } = response.data
+    dispatch({
+      type: REGISTER_USER_SUCCESS,
+      payload: {
+        user,
+        token,
+        location,
+      },
+    })
+
+    // will add later
+    // addUserToLocalStorage({
+    //   user,
+    //   token,
+    //   location,
+    // })
+  } catch (error) {
+    console.log(error.response)
+    dispatch({
+      type: REGISTER_USER_ERROR,
+      payload: { msg: error.response.data.msg },
+    })
+  }
+  clearAlert()
+}
+```
+
+```js
+reducer.js
+if (action.type === REGISTER_USER_BEGIN) {
+  return { ...state, isLoading: true }
+}
+if (action.type === REGISTER_USER_SUCCESS) {
+  return {
+    ...state,
+    user: action.payload.user,
+    token: action.payload.token,
+    userLocation: action.payload.location,
+    jobLocation: action.payload.location,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'success',
+    alertText: 'User Created! Redirecting...',
+  }
+}
+if (action.type === REGISTER_USER_ERROR) {
+  return {
+    ...state,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'danger',
+    alertText: action.payload.msg,
+  }
+}
+```
+
+#### Navigate To Dashboard
+
+```js
+Register.js
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+const Register = () => {
+  const { user } = useAppContext()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate('/')
+      }, 3000)
+    }
+  }, [user, navigate])
+}
+```
+
+#### Local Storage
+
+```js
+appContext.js
+const addUserToLocalStorage = ({ user, token, location }) => {
+  localStorage.setItem('user', JSON.stringify(user))
+  localStorage.setItem('token', token)
+  localStorage.setItem('location', location)
+}
+
+const removeUserFromLocalStorage = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  localStorage.removeItem('location')
+}
+
+const registerUser = async (currentUser) => {
+  // in try block
+  addUserToLocalStorage({
+    user,
+    token,
+    location,
+  })
+}
+
+// set as default
+const token = localStorage.getItem('token')
+const user = localStorage.getItem('user')
+const userLocation = localStorage.getItem('location')
+
+const initialState = {
+  user: user ? JSON.parse(user) : null,
+  token: token,
+  userLocation: userLocation || '',
+  jobLocation: userLocation || '',
+}
+```
+
+#### Login Controller
+
+```js
+authController.js
+const login = async (req, res) => {
+  const { email, password } = req.body
+  if (!email || !password) {
+    throw new BadRequestError('Please provide all values')
+  }
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new UnauthenticatedError('Invalid Credentials')
+  }
+  // compare password
+  const isPasswordCorrect = await user.comparePassword(password)
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('Invalid Credentials')
+  }
+  const token = user.createJWT()
+
+  res.status(StatusCodes.OK).json({
+    user: user,
+    token,
+    location: user.location,
+  })
+}
+```
+
+```js
+User.js in models
+
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+  const isMatch = await bcrypt.compare(candidatePassword, this.password)
+  return isMatch
+}
+```
+
+- test in Postman
+
+#### Login User - Setup
+
+- actions.js LOGIN_USER_BEGIN,SUCCESS,ERROR
+- import reducer,appContext
+
+```js
+appContext.js
+const loginUser = async (currentUser) => {
+  console.log(currentUser)
+}
+```
+
+- import in Register.js
+
+```js
+Register.js
+
+if (isMember) {
+  loginUser(currentUser)
+} else {
+  registerUser(currentUser)
+}
+```
+
+#### Login User - Complete
+
+```js
+appContext.js
+const loginUser = async (currentUser) => {
+  dispatch({ type: LOGIN_USER_BEGIN })
+  try {
+    const { data } = await axios.post('/api/v1/auth/login', currentUser)
+    const { user, token, location } = data
+
+    dispatch({
+      type: LOGIN_USER_SUCCESS,
+      payload: { user, token, location },
+    })
+
+    addUserToLocalStorage({ user, token, location })
+  } catch (error) {
+    dispatch({
+      type: LOGIN_USER_ERROR,
+      payload: { msg: error.response.data.msg },
+    })
+  }
+  clearAlert()
+}
+```
+
+```js
+reducer.js
+
+if (action.type === LOGIN_USER_BEGIN) {
+  return {
+    ...state,
+    isLoading: true,
+  }
+}
+if (action.type === LOGIN_USER_SUCCESS) {
+  return {
+    ...state,
+    isLoading: false,
+    user: action.payload.user,
+    token: action.payload.token,
+    userLocation: action.payload.location,
+    jobLocation: action.payload.location,
+    showAlert: true,
+    alertType: 'success',
+    alertText: 'Login Successful! Redirecting...',
+  }
+}
+if (action.type === LOGIN_USER_ERROR) {
+  return {
+    ...state,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'danger',
+    alertText: action.payload.msg,
+  }
+}
+```
+
+#### Dashboard pages
+
+- delete Dashboard.js
+- fix imports/exports
+- replace in home route
+
+```js
+<Route path='/' element={<div>dashboard</div>} />
+```
+
+- create <b>dashboard</b> directory in pages
+- create AddJob,AllJobs,Profile,Stats,SharedLayout, index.js
+- setup basic returns
+
+```js
+return <h1>Add Job Page</h1>
+```
+
+- export all with index.js (just like components)
+- import all pages in App.js
+
+#### Nested Structure
+
+```js
+App.js
+
+<Route path='/' >
+  <Route path="stats" element={<Stats />} />
+  <Route path='all-jobs' element={<AllJobs />}></Route>
+  <Route path='add-job' element={<AddJob />}></Route>
+  <Route path='profile' element={<Profile />}></Route>
+</Route>
 ```

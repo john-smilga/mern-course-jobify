@@ -1468,3 +1468,246 @@ app.use('/api/v1/jobs', jobsRouter)
 - JOBIFY Collection
 - auth and jobs folders
 - setup routes
+
+#### User Model
+
+- <b>models</b> folder
+- User.js
+- setup schema
+- name, email, password, lastName, location
+- all {type:String}
+
+#### Validate Email
+
+```js
+validate:{
+  validator:(field)=> {return 2 > 1},
+  message:'Please provide valid email'
+  }
+```
+
+- [Validator Package](https://www.npmjs.com/package/validator)
+
+```sh
+npm install validator
+```
+
+- import in User.js
+- validator.isEmail
+
+#### Register User - Initial Setup
+
+- authController
+- import User model
+- setup temporary try/catch
+- await User.create(req.body)
+- if success 201 with json({user}) (temp)
+- if error 500 with json({msg:'there was an error'})
+
+#### Pass Error to Error Handler
+
+- next(error)
+
+#### Express-Async-Errors Package
+
+- remove try/catch
+- [Express-Async-Errors](https://www.npmjs.com/package/express-async-errors)
+
+```sh
+npm install express-async-errors
+
+```
+
+- in server.js
+- import 'express-async-errors'
+
+- use throw Error('error') instead of next(error)
+
+#### Http Status Codes
+
+- constants for status codes
+- personal preference
+- provides consistency
+- less bugs
+- easier to read/manage
+
+- [Http Status Codes](https://www.npmjs.com/package/http-status-codes)
+
+```sh
+npm install http-status-codes
+```
+
+- import/setup in authController and error-handler
+- setup defaultError
+
+#### Custom Errors
+
+#### Refactor Errors
+
+- create errors folder
+- create custom-api, bad-request, not-found, index.js files
+- add proper imports
+- setup index.js just like in the front-end
+- import {BadRequestError} in authController
+- gotcha "errors/index.js"
+
+#### Hash Passwords
+
+- one way street, only compare hashed values
+- [bcrypt.js](https://www.npmjs.com/package/bcryptjs)
+
+```sh
+npm install bcryptjs
+```
+
+- User Model
+- import bcrypt from 'bcryptjs'
+- await genSalt(10)
+- await hash(password , salt)
+- await compare(requestPassword , currentPassword)
+- [mongoose middleware](https://mongoosejs.com/docs/middleware.html)
+- UserSchema.pre('save',async function(){"this" points back to UserSchema})
+
+#### Mongoose - Custom Instance Methods
+
+[Custom Instance Methods](https://mongoosejs.com/docs/guide.html#methods)
+
+- UserSchema.methods.createJWT = function(){console.log(this)}
+- register controller
+- right after User.create()
+- invoke user.createJWT()
+
+#### JWT
+
+- token
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
+
+```sh
+npm install jsonwebtoken
+```
+
+- User Model
+- import jwt from 'jsonwebtoken'
+- jwt.sign(payload,secret,options)
+- createJWT
+
+```js
+return jwt.sign({ userId: this._id }, 'jwtSecret', { expiresIn: '1d' })
+```
+
+```js
+return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+  expiresIn: process.env.JWT_LIFETIME,
+})
+```
+
+#### JWT_SECRET and JWT_LIFETIME
+
+- [Keys Generator](https://www.allkeysgenerator.com/)
+- RESTART SERVER!!!!
+
+#### Complete Register
+
+- password : {select:false}
+- complete response
+
+#### Concurrently
+
+- front-end and backend (server)
+- run separate terminals
+- [concurrently](https://www.npmjs.com/package/concurrently)
+
+```sh
+npm install concurrently --save-dev
+
+```
+
+- package.json
+
+```js
+// --kill-others switch, all commands are killed if one dies
+// --prefix client - folder
+// cd client && npm start
+// escape quotes
+
+"scripts": {
+    "server": "nodemon server --ignore client",
+    "client": "npm start --prefix client",
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \" npm run client\""
+  },
+```
+
+#### Cors Error
+
+[Cors Error](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+
+- two fixes (cors package and proxy)
+
+#### Cors Package
+
+[cors package](https://www.npmjs.com/package/cors)
+
+```sh
+npm install cors
+```
+
+```js
+import cors from 'cors'
+
+app.use(cors())
+```
+
+#### Proxy
+
+- access from anywhere
+- don't want to use full url
+
+[cra proxy](https://create-react-app.dev/docs/proxying-api-requests-in-development/)
+
+```js
+"proxy":"http://localhost:5000"
+```
+
+- my preference to remove trailing slash /
+- restart app
+
+#### Register User - Setup
+
+```js
+appContext.js
+
+const initialState = {
+  user: null,
+  token: null,
+  userLocation: '',
+}
+```
+
+- actions.js REGISTER_USER_BEGIN,SUCCESS,ERROR
+- import reducer,appContext
+
+```js
+appContext.js
+const registerUser = async (currentUser) => {
+  console.log(currentUser)
+}
+```
+
+- import in Register.js
+
+```js
+Register.js
+
+const currentUser = { name, email, password }
+if (isMember) {
+  console.log('already a member')
+} else {
+  registerUser(currentUser)
+}
+
+return (
+  <button type='submit' className='btn btn-block' disable={isLoading}>
+    submit
+  </button>
+)
+```

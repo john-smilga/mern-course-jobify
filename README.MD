@@ -2373,3 +2373,66 @@ const [showLogout, setShowLogout] = useState(false)
 </div>
 
 ```
+
+#### Logout User
+
+```js
+actions.js
+
+export const LOGOUT_USER = 'LOGOUT_USER'
+```
+
+- import/export
+
+```js
+appContext.js
+
+const logoutUser = () => {
+  dispatch({ type: LOGOUT_USER })
+  removeUserFromLocalStorage()
+}
+
+value={{logoutUser}}
+```
+
+```js
+reducer.js
+
+import { initialState } from './appContext'
+
+if (action.type === LOGOUT_USER) {
+  return {
+    ...initialState,
+    user: null,
+    token: null,
+    userLocation: null,
+    jobLocation: null,
+  }
+}
+```
+
+```js
+Navbar.js
+
+const { user, logoutUser, toggleSidebar } = useAppContext()
+
+return (
+  {user && (
+          <div className='btn-container'>
+            <button className='btn' onClick={() => setShowLogout(!showLogout)}>
+              <FaUserCircle />
+              {user.name}
+              {user && user.name}
+              {user?.name} // optional chaining
+              <FaCaretDown />
+            </button>
+            <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
+              <button onClick={logoutUser} className='dropdown-btn'>
+                logout
+              </button>
+            </div>
+          </div>
+        )}
+)
+
+```

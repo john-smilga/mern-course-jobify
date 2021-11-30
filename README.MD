@@ -2351,3 +2351,25 @@ return (
   </button>
 )
 ```
+
+#### Toggle Dropdown
+
+```js
+Navbar.js
+
+const [showLogout, setShowLogout] = useState(false)
+
+<div className='btn-container'>
+  <button className='btn' onClick={() => setShowLogout(!showLogout)}>
+    <FaUserCircle />
+      {user.name}
+    <FaCaretDown />
+  </button>
+  <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
+    <button onClick={() => logoutUser()} className='dropdown-btn'>
+      logout
+    </button>
+  </div>
+</div>
+
+```

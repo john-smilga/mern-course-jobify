@@ -2309,3 +2309,45 @@ const Navbar = () => {
 
 export default Navbar
 ```
+
+#### Toggle Sidebar
+
+```js
+actions.js
+
+export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
+```
+
+- import/export
+
+```js
+appContext.js
+
+const initialState = {
+  showSidebar: false,
+}
+
+const toggleSidebar = () => {
+  dispatch({ type: TOGGLE_SIDEBAR })
+}
+```
+
+```js
+reducer.js
+
+if (action.type === TOGGLE_SIDEBAR) {
+  return { ...state, showSidebar: !state.showSidebar }
+}
+```
+
+```js
+Navbar.js
+
+const { toggleSidebar } = useAppContext()
+
+return (
+  <button className='toggle-btn' onClick={toggleSidebar}>
+    <FaAlignLeft />
+  </button>
+)
+```

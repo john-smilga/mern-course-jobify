@@ -1852,7 +1852,50 @@ const initialState = {
 }
 ```
 
-#### Login Controller
+#### Morgan Package
+
+- http logger middleware for node.js
+- [morgan docs](https://www.npmjs.com/package/morgan)
+
+```sh
+npm install morgan
+```
+
+```js
+import morgan from 'morgan'
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'))
+}
+```
+
+#### UnauthenticatedError
+
+- unauthenticated.js in errors
+- import/export
+
+```js
+import { StatusCodes } from 'http-status-codes'
+import CustomAPIError from './custom-api.js'
+
+class UnauthenticatedError extends CustomAPIError {
+  constructor(message) {
+    super(message)
+    this.statusCode = StatusCodes.UNAUTHORIZED
+  }
+}
+```
+
+#### Compare Password
+
+```js
+User.js in models
+
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+  const isMatch = await bcrypt.compare(candidatePassword, this.password)
+  return isMatch
+}
+```
 
 ```js
 authController.js
@@ -1861,31 +1904,18 @@ const login = async (req, res) => {
   if (!email || !password) {
     throw new BadRequestError('Please provide all values')
   }
-  const user = await User.findOne({ email })
+  const user = await User.findOne({ email }).select('+password')
+
   if (!user) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
-  // compare password
   const isPasswordCorrect = await user.comparePassword(password)
   if (!isPasswordCorrect) {
     throw new UnauthenticatedError('Invalid Credentials')
   }
   const token = user.createJWT()
-
-  res.status(StatusCodes.OK).json({
-    user: user,
-    token,
-    location: user.location,
-  })
-}
-```
-
-```js
-User.js in models
-
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-  const isMatch = await bcrypt.compare(candidatePassword, this.password)
-  return isMatch
+  user.password = undefined
+  res.status(StatusCodes.OK).json({ user, token, location: user.location })
 }
 ```
 
@@ -1974,6 +2004,99 @@ if (action.type === LOGIN_USER_ERROR) {
 }
 ```
 
+#### Refactor
+
+```js
+actions.js
+export const SETUP_USER_BEGIN = 'SETUP_USER_BEGIN'
+export const SETUP_USER_SUCCESS = 'SETUP_USER_SUCCESS'
+export const SETUP_USER_ERROR = 'SETUP_USER_ERROR'
+```
+
+```js
+appContext.js
+
+const setupUser = async ({ currentUser, endPoint, alertText }) => {
+  dispatch({ type: SETUP_USER_BEGIN })
+  try {
+    const { data } = await axios.post(`/api/v1/auth/${endPoint}`, currentUser)
+
+    const { user, token, location } = data
+    dispatch({
+      type: SETUP_USER_SUCCESS,
+      payload: { user, token, location, alertText },
+    })
+    addUserToLocalStorage({ user, token, location })
+  } catch (error) {
+    dispatch({
+      type: SETUP_USER_ERROR,
+      payload: { msg: error.response.data.msg },
+    })
+  }
+  clearAlert()
+}
+```
+
+```js
+reducer.js
+if (action.type === SETUP_USER_BEGIN) {
+  return { ...state, isLoading: true }
+}
+if (action.type === SETUP_USER_SUCCESS) {
+  return {
+    ...state,
+    isLoading: false,
+    token: action.payload.token,
+    user: action.payload.user,
+    userLocation: action.payload.location,
+    jobLocation: action.payload.location,
+    showAlert: true,
+    alertType: 'success',
+    alertText: action.payload.alertText,
+  }
+}
+if (action.type === SETUP_USER_ERROR) {
+  return {
+    ...state,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'danger',
+    alertText: action.payload.msg,
+  }
+}
+```
+
+- import/export
+
+```js
+Register.js
+
+const onSubmit = (e) => {
+  e.preventDefault()
+  const { name, email, password, isMember } = values
+  if (!email || !password || (!isMember && !name)) {
+    displayAlert()
+    return
+  }
+  const currentUser = { name, email, password }
+  if (isMember) {
+    setupUser({
+      currentUser,
+      endPoint: 'login',
+      alertText: 'Login Successful! Redirecting...',
+    })
+  } else {
+    setupUser({
+      currentUser,
+      endPoint: 'register',
+      alertText: 'User Created! Redirecting...',
+    })
+  }
+}
+```
+
+#### Nested Pages in React Router 6
+
 #### Dashboard pages
 
 - delete Dashboard.js
@@ -2006,4 +2129,183 @@ App.js
   <Route path='add-job' element={<AddJob />}></Route>
   <Route path='profile' element={<Profile />}></Route>
 </Route>
+```
+
+#### Shared Layout
+
+```js
+App.js
+
+<Route path='/' element={<SharedLayout/>} >
+```
+
+```js
+SharedLayout.js
+
+import { Outlet, Link } from 'react-router-dom'
+import Wrapper from '../../assets/wrappers/SharedLayout'
+
+const SharedLayout = () => {
+  return (
+    <Wrapper>
+      <nav>
+        <Link to='all-jobs'>all jobs</Link>
+        <Link to='add-job'>all jobs</Link>
+      </nav>
+      <Outlet />
+    </Wrapper>
+  )
+}
+
+export default SharedLayout
+```
+
+```js
+App.js
+
+<Route index element={<Stats/>} >
+```
+
+#### Protected Route
+
+- create ProtectedRoute.js in pages
+- import/export
+- wrap SharedLayout in App.js
+
+```js
+<Route
+  path='/'
+  element={
+    <ProtectedRoute>
+      <SharedLayout />
+    </ProtectedRoute>
+  }
+/>
+```
+
+```js
+ProtectedRoute.js
+
+import { Navigate } from 'react-router-dom'
+import { useAppContext } from '../context/appContext'
+
+const ProtectedRoute = ({ children }) => {
+  const { user } = useAppContext()
+  if (!user) {
+    return <Navigate to='/landing' />
+  }
+  return children
+}
+```
+
+#### Navbar, SmallSidebar, BigSidebar
+
+- create Navbar, SmallSidebar, BigSidebar in components
+- import Wrappers from assets/wrappers
+- simple return
+- import/export
+
+```js
+SharedLayout.js
+
+import { Outlet } from 'react-router-dom'
+import { Navbar, SmallSidebar, BigSidebar } from '../../components'
+import Wrapper from '../../assets/wrappers/SharedLayout'
+
+const SharedLayout = () => {
+  const { user } = useAppContext()
+  return (
+    <>
+      <Wrapper>
+        <main className='dashboard'>
+          <SmallSidebar />
+          <BigSidebar />
+          <div>
+            <Navbar />
+            <div className='dashboard-page'>
+              <Outlet />
+            </div>
+          </div>
+        </main>
+      </Wrapper>
+    </>
+  )
+}
+
+export default SharedLayout
+```
+
+#### React Icons
+
+[React Icons](https://react-icons.github.io/react-icons/)
+
+```sh
+npm install react-icons
+```
+
+```js
+Navbar.js
+
+import Wrapper from '../assets/wrappers/Navbar'
+import {FaHome} from 'react-icons/fa'
+const Navbar = () => {
+  return (
+    <Wrapper>
+      <h4>navbar</h4>
+      <FaHome>
+    </Wrapper>
+  )
+}
+
+export default Navbar
+
+```
+
+#### Navbar Setup
+
+```js
+Navbar.js
+
+import { useState } from 'react'
+import { FaAlignLeft, FaUserCircle, FaCaretDown } from 'react-icons/fa'
+import { useAppContext } from '../context/appContext'
+import Logo from './Logo'
+import Wrapper from '../assets/wrappers/Navbar'
+const Navbar = () => {
+  return (
+    <Wrapper>
+      <div className='nav-center'>
+        <button
+          className='toggle-btn'
+          onClick={() => console.log('toggle sidebar')}
+        >
+          <FaAlignLeft />
+        </button>
+
+        <div>
+          <Logo />
+          <h3 className='logo-text'>dashboard</h3>
+        </div>
+
+        <div className='btn-container'>
+          <button className='btn' onClick={() => console.log('show logout')}>
+            <FaUserCircle />
+            john
+            <FaCaretDown />
+          </button>
+          <div className='dropdown show-dropdown'>
+            <button
+              onClick={() => console.log('logout user')}
+              className='dropdown-btn'
+            >
+              logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </Wrapper>
+  )
+}
+
+export default Navbar
 ```

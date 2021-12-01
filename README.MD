@@ -2405,8 +2405,8 @@ if (action.type === LOGOUT_USER) {
     ...initialState,
     user: null,
     token: null,
-    userLocation: null,
-    jobLocation: null,
+    userLocation: '',
+    jobLocation: '',
   }
 }
 ```
@@ -2417,22 +2417,153 @@ Navbar.js
 const { user, logoutUser, toggleSidebar } = useAppContext()
 
 return (
-  {user && (
-          <div className='btn-container'>
-            <button className='btn' onClick={() => setShowLogout(!showLogout)}>
-              <FaUserCircle />
-              {user.name}
-              {user && user.name}
-              {user?.name} // optional chaining
-              <FaCaretDown />
-            </button>
-            <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
-              <button onClick={logoutUser} className='dropdown-btn'>
-                logout
-              </button>
-            </div>
-          </div>
-        )}
+  <div className='btn-container'>
+    <button className='btn' onClick={() => setShowLogout(!showLogout)}>
+      <FaUserCircle />
+      {user.name}
+      {user && user.name}
+      {user?.name} // optional chaining
+      <FaCaretDown />
+    </button>
+    <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
+      <button onClick={logoutUser} className='dropdown-btn'>
+        logout
+      </button>
+    </div>
+  </div>
 )
+```
 
+#### Setup Links
+
+- create <b>utils</b>in the <b>src</b>
+- setup links.js
+
+```js
+import { IoBarChartSharp } from 'react-icons/io5'
+import { MdQueryStats } from 'react-icons/md'
+import { FaWpforms } from 'react-icons/fa'
+import { ImProfile } from 'react-icons/im'
+
+const links = [
+  {
+    id: 1,
+    text: 'stats',
+    path: '/',
+    icon: <IoBarChartSharp />,
+  },
+  {
+    id: 2,
+    text: 'all jobs',
+    path: 'all-jobs',
+    icon: <MdQueryStats />,
+  },
+  {
+    id: 3,
+    text: 'add job',
+    path: 'add-job',
+    icon: <FaWpforms />,
+  },
+  {
+    id: 4,
+    text: 'profile',
+    path: 'profile',
+    icon: <ImProfile />,
+  },
+]
+
+export default links
+```
+
+#### Small Sidebar - Setup
+
+```js
+SmallSidebar.js
+
+import Wrapper from '../assets/wrappers/SmallSidebar'
+import { FaTimes } from 'react-icons/fa'
+import { useAppContext } from '../context/appContext'
+import links from '../utils/links'
+import { NavLink } from 'react-router-dom'
+import Logo from './Logo'
+
+export const SmallSidebar = () => {
+  return (
+    <Wrapper>
+      <div className='sidebar-container show-sidebar'>
+        <div className='content'>
+          <button className='close-btn' onClick={() => console.log('toggle')}>
+            <FaTimes />
+          </button>
+          <header>
+            <Logo />
+          </header>
+          <div className='nav-links'>nav links</div>
+        </div>
+      </div>
+    </Wrapper>
+  )
+}
+
+export default SmallSidebar
+```
+
+#### Small Sidebar - Toggle
+
+```js
+SmallSidebar.js
+
+const { showSidebar, toggleSidebar } = useAppContext()
+```
+
+```js
+SmallSidebar.js
+
+return (
+  <div
+    className={
+      showSidebar ? 'sidebar-container show-sidebar' : 'sidebar-container'
+    }
+  ></div>
+)
+```
+
+```js
+SmallSidebar.js
+
+return (
+  <button className='close-btn' onClick={toggleSidebar}>
+    <FaTimes />
+  </button>
+)
+```
+
+#### Small Sidebar - Nav Links
+
+```js
+SmallSidebar.js
+
+import { NavLink } from 'react-router-dom'
+
+return (
+  <div className='nav-links'>
+    {links.map((link) => {
+      const { text, path, id, icon } = link
+
+      return (
+        <NavLink
+          to={path}
+          className={({ isActive }) =>
+            isActive ? 'nav-link active' : 'nav-link'
+          }
+          key={id}
+          onClick={toggleSidebar}
+        >
+          <span className='icon'>{icon}</span>
+          {text}
+        </NavLink>
+      )
+    })}
+  </div>
+)
 ```

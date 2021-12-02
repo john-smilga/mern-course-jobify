@@ -2570,7 +2570,7 @@ return (
 
 #### Nav Links Component
 
-- create NavLinks component
+- in <b>components</b> create NavLinks.js
 - styles still set from Wrapper
 - also can setup in links.js, preference
 
@@ -2611,4 +2611,34 @@ SmallSidebar.js
 import NavLinks from './NavLinks'
 
 return <NavLinks toggleSidebar={toggleSidebar}>
+```
+
+#### Big Sidebar
+
+```js
+import { useAppContext } from '../context/appContext'
+import NavLinks from './NavLinks'
+import Logo from '../components/Logo'
+import Wrapper from '../assets/wrappers/BigSidebar'
+const BigSidebar = () => {
+  const { showSidebar } = useAppContext()
+  return (
+    <Wrapper>
+      <div
+        className={
+          showSidebar ? 'sidebar-container ' : 'sidebar-container show-sidebar'
+        }
+      >
+        <div className='content'>
+          <header>
+            <Logo />
+          </header>
+          <NavLinks />
+        </div>
+      </div>
+    </Wrapper>
+  )
+}
+
+export default BigSidebar
 ```

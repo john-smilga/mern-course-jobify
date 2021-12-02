@@ -2706,3 +2706,58 @@ const auth = async (req, res, next) => {
   next()
 }
 ```
+
+#### Postman - Set Token Programmatically
+
+- register and login routes
+- Tests
+
+```js
+const jsonData = pm.response.json()
+pm.globals.set('token', jsonData.token)
+
+Type: Bearer
+
+Token: {
+  {
+    token
+  }
+}
+```
+
+#### Unauthenticated Error
+
+```js
+auth.js
+
+const auth = async (req, res, next) => {
+  const authHeader = req.headers.authorization
+  if (!authHeader) {
+    // why, well is it 400 or 404?
+    // it's actually 401
+    throw new UnAuthenticatedError('Authentication Invalid')
+  }
+
+  next()
+}
+```
+
+- create unauthenticated.js in <b>errors</b>
+
+```js
+unauthenticated.js
+
+import { StatusCodes } from 'http-status-codes'
+import CustomAPIError from './custom-api.js'
+
+class UnauthenticatedError extends CustomAPIError {
+  constructor(message) {
+    super(message)
+    this.statusCode = StatusCodes.UNAUTHORIZED
+  }
+}
+
+export default UnauthenticatedError
+```
+
+- import/export

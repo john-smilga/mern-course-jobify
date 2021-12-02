@@ -2644,7 +2644,7 @@ const BigSidebar = () => {
 export default BigSidebar
 ```
 
-#### Update User - Server Setup
+#### Authenticate User Setup
 
 - create auth.js in <b>middleware</b>
 
@@ -2682,4 +2682,27 @@ import authenticateUser from './middleware/auth.js'
 // all routes !!!!
 
 router.route('/stats').get(authenticateUser, showStats)
+```
+
+#### Auth - Bearer Schema
+
+```js
+Postman
+
+Headers
+
+Authorization: Bearer <token>
+
+```
+
+```js
+auth.js
+
+const auth = async (req, res, next) => {
+  const headers = req.headers
+  const authHeader = req.headers.authorization
+  console.log(headers)
+  console.log(authHeader)
+  next()
+}
 ```

@@ -9,6 +9,7 @@ const Profile = () => {
   const [email, setEmail] = useState(user?.email)
   const [lastName, setLastName] = useState(user?.lastName)
   const [location, setLocation] = useState(user?.location)
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!name || !email) {

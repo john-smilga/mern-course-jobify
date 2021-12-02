@@ -2620,6 +2620,7 @@ import { useAppContext } from '../context/appContext'
 import NavLinks from './NavLinks'
 import Logo from '../components/Logo'
 import Wrapper from '../assets/wrappers/BigSidebar'
+
 const BigSidebar = () => {
   const { showSidebar } = useAppContext()
   return (
@@ -2641,4 +2642,44 @@ const BigSidebar = () => {
 }
 
 export default BigSidebar
+```
+
+#### Update User - Server Setup
+
+- create auth.js in <b>middleware</b>
+
+```js
+const auth = async (req, res, next) => {
+  console.log('authenticate user')
+  next()
+}
+
+export default auth
+```
+
+```js
+authRoutes.js
+
+import authenticateUser from '../middleware/auth.js'
+
+router.route('/updateUser').patch(authenticateUser, updateUser)
+```
+
+- two options
+
+```js
+server.js
+
+import authenticateUser from './middleware/auth.js'
+app.use('/api/v1/jobs', authenticateUser, jobsRouter)
+```
+
+```js
+jobsRoutes.js
+
+import authenticateUser from './middleware/auth.js'
+
+// all routes !!!!
+
+router.route('/stats').get(authenticateUser, showStats)
 ```

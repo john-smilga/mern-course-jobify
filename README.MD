@@ -2739,7 +2739,7 @@ const auth = async (req, res, next) => {
 
   if (!authHeader) {
     // why, well is it 400 or 404?
-    // it's actually 401
+    // actually 401
     throw new UnAuthenticatedError('Authentication Invalid')
   }
 
@@ -2763,8 +2763,9 @@ const auth = async (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET)
+    // console.log(payload)
     // attach the user request object
-    req.user = { userId: payload.userId }
+    req.user = payload
     next()
   } catch (error) {
     throw new UnauthenticatedError('Authentication invalid')
@@ -2779,7 +2780,7 @@ export default auth
 ```js
 const updateUser = async (req, res) => {
   const { email, name, lastName, location } = req.body
-  if (!email || !name) {
+  if (!email || !name || !lastName || !location) {
     throw new BadRequestError('Please provide all values')
   }
 
@@ -2796,8 +2797,10 @@ const updateUser = async (req, res) => {
   // in this case only id
   // if other properties included, must re-generate
 
+  const token = user.createJWT()
   res.status(StatusCodes.OK).json({
     user,
+    token,
     location: user.location,
   })
 }

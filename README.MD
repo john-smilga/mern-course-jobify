@@ -2732,7 +2732,7 @@ Token: {
 ```js
 auth.js
 
-import { UnauthenticatedError } from '../errors/index.js'
+import { UnAuthenticatedError } from '../errors/index.js'
 
 const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization
@@ -2751,7 +2751,7 @@ const auth = async (req, res, next) => {
 
 ```js
 import jwt from 'jsonwebtoken'
-import { UnauthenticatedError } from '../errors/index.js'
+import { UnAuthenticatedError } from '../errors/index.js'
 
 const auth = async (req, res, next) => {
   // check header
@@ -2765,7 +2765,8 @@ const auth = async (req, res, next) => {
     const payload = jwt.verify(token, process.env.JWT_SECRET)
     // console.log(payload)
     // attach the user request object
-    req.user = payload
+    // req.user = payload
+    req.user = { userId: payload.userId }
     next()
   } catch (error) {
     throw new UnauthenticatedError('Authentication invalid')
@@ -2806,9 +2807,9 @@ const updateUser = async (req, res) => {
 }
 ```
 
-- LOGIN WON'T WORK!!!!!!!!
-
 #### Modified Paths
+
+- user.save() vs User.findOneAndUpdate
 
 ```js
 User.js
@@ -2853,7 +2854,7 @@ const Profile = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!name || !email) {
+    if (!name || !email || !lastName || !location) {
       // test and remove temporary
       displayAlert()
       return
@@ -2914,9 +2915,9 @@ appContext.js
 
 const updaterUser = async (currentUser) => {
   try {
-    await axios.post('/api/v1/auth/updateUser', currentUser, {
+    const { data } = await axios.post('/api/v1/auth/updateUser', currentUser, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${initialState.token}`,
       },
     })
   } catch (error) {
@@ -2930,7 +2931,7 @@ const updaterUser = async (currentUser) => {
 ```js
 appContext.js
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`
+axios.defaults.headers.common['Authorization'] = `Bearer ${initialState.token}`
 ```
 
 #### Axios - Setup Instance
@@ -2941,13 +2942,13 @@ AppContext.js
 const authFetch = axios.create({
   baseURL: '/api/v1',
   headers: {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${initialState.token}`,
   },
 })
 
 const updaterUser = async (currentUser) => {
   try {
-    await authFetch.post('/auth/updateUser', currentUser)
+    const { data } = await authFetch.post('/auth/updateUser', currentUser)
   } catch (error) {
     console.log(error.response)
   }
@@ -2962,7 +2963,7 @@ appContext.js
 // response interceptor
 authFetch.interceptors.request.use(
   (config) => {
-    config.headers.common['Authorization'] = `Bearer ${state.token}`
+    config.headers.common['Authorization'] = `Bearer ${initialState.token}`
     return config
   },
   (error) => {
@@ -2999,14 +3000,14 @@ const updateUser = async (currentUser) => {
     const { data } = await authFetch.patch('/auth/updateUser', currentUser)
 
     // no token
-    const { user, location } = data
+    const { user, location, token } = data
 
     dispatch({
       type: UPDATE_USER_SUCCESS,
-      payload: { user, location },
+      payload: { user, location, token },
     })
 
-    addUserToLocalStorage({ user, location, token: initialState.token })
+    addUserToLocalStorage({ user, location, token })
   } catch (error) {
     dispatch({
       type: UPDATE_USER_ERROR,
@@ -3024,10 +3025,10 @@ if (action.type === UPDATE_USER_BEGIN) {
 }
 
 if (action.type === UPDATE_USER_SUCCESS) {
-  // no token
   return {
     ...state,
     isLoading: false,
+    token:action.payload.token
     user: action.payload.user,
     userLocation: action.payload.location,
     jobLocation: action.payload.location,
@@ -3074,7 +3075,7 @@ const updateUser = async (currentUser) => {
 
     dispatch({
       type: UPDATE_USER_SUCCESS,
-      payload: { user, location },
+      payload: { user, location, token },
     })
 
     addUserToLocalStorage({ user, location, token: initialState.token })

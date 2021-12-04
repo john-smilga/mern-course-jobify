@@ -2917,7 +2917,7 @@ const updaterUser = async (currentUser) => {
   try {
     const { data } = await axios.post('/api/v1/auth/updateUser', currentUser, {
       headers: {
-        Authorization: `Bearer ${initialState.token}`,
+        Authorization: `Bearer ${state.token}`,
       },
     })
   } catch (error) {
@@ -2931,7 +2931,7 @@ const updaterUser = async (currentUser) => {
 ```js
 appContext.js
 
-axios.defaults.headers.common['Authorization'] = `Bearer ${initialState.token}`
+axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`
 ```
 
 #### Axios - Setup Instance
@@ -2942,7 +2942,7 @@ AppContext.js
 const authFetch = axios.create({
   baseURL: '/api/v1',
   headers: {
-    Authorization: `Bearer ${initialState.token}`,
+    Authorization: `Bearer ${state.token}`,
   },
 })
 
@@ -2963,7 +2963,7 @@ appContext.js
 // response interceptor
 authFetch.interceptors.request.use(
   (config) => {
-    config.headers.common['Authorization'] = `Bearer ${initialState.token}`
+    config.headers.common['Authorization'] = `Bearer ${state.token}`
     return config
   },
   (error) => {

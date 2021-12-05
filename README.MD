@@ -2915,11 +2915,12 @@ appContext.js
 
 const updaterUser = async (currentUser) => {
   try {
-    const { data } = await axios.post('/api/v1/auth/updateUser', currentUser, {
+    const { data } = await axios.patch('/api/v1/auth/updateUser', currentUser, {
       headers: {
         Authorization: `Bearer ${state.token}`,
       },
     })
+    console.log(data)
   } catch (error) {
     console.log(error.response)
   }
@@ -2948,7 +2949,7 @@ const authFetch = axios.create({
 
 const updaterUser = async (currentUser) => {
   try {
-    const { data } = await authFetch.post('/auth/updateUser', currentUser)
+    const { data } = await authFetch.patch('/auth/updateUser', currentUser)
   } catch (error) {
     console.log(error.response)
   }

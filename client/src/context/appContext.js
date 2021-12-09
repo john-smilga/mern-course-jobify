@@ -60,9 +60,9 @@ export const initialState = {
   monthlyApplications: [],
   jobs: [],
   totalJobs: 0,
-  // removed page from TOGGLE_VALUES, DON'T FORGET TO ADD IT !!!!!!!!!!
+  // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
   page: 1,
-  // removed page from TOGGLE_VALUES, DON'T FORGET TO ADD IT !!!!!!!!!!
+  // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
 
   numOfPages: 1,
   search: '',

@@ -113,6 +113,8 @@ const reducer = (state, action) => {
   }
   if (action.type === HANDLE_CHANGE) {
     // page will become important later
+    // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
+
     return { ...state, page: 1, [action.payload.name]: action.payload.value }
   }
   if (action.type === CLEAR_VALUES) {

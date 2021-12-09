@@ -3194,6 +3194,7 @@ import { useAppContext } from '../../context/appContext'
 import Wrapper from '../../assets/wrappers/DashboardFormPage'
 const AddJob = () => {
   const {
+    isEditing,
     showAlert,
     displayAlert,
     position,
@@ -3362,7 +3363,7 @@ return (
 
 #### Change State Values With Handle Change
 
-- [JS Nuggets Dynamic Keys](https://youtu.be/_qxCYtWm0tw)
+- [JS Nuggets Dynamic Object Keys](https://youtu.be/_qxCYtWm0tw)
 
 ```js
 actions.js
@@ -3474,7 +3475,7 @@ appContext.js
 const createJob = async () => {
   dispatch({ type: CREATE_JOB_BEGIN })
   try {
-    const { position, company, jobLocation, jobType, status, token } = state
+    const { position, company, jobLocation, jobType, status } = state
 
     await authFetch.post('/jobs', {
       company,
@@ -3543,5 +3544,156 @@ if (action.type === CREATE_JOB_ERROR) {
     alertType: 'danger',
     alertText: action.payload.msg,
   }
+}
+```
+
+#### Get All Jobs
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const jobs = await Job.find({ createdBy: req.user.userId })
+  res
+    .status(StatusCodes.OK)
+    .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
+}
+```
+
+#### Jobs State Values
+
+```js
+appContext.js
+
+const initialState = {
+  jobs: [],
+  totalJobs: 0,
+  page: 1,
+  numOfPages: 1,
+}
+```
+
+#### Get All Jobs Request
+
+```js
+actions.js
+export const GET_JOBS_BEGIN = 'GET_JOBS_BEGIN'
+export const GET_JOBS_SUCCESS = 'GET_JOBS_SUCCESS'
+```
+
+```js
+appContext.js
+
+const getJobs = async () => {
+  let url = `/jobs`
+
+  dispatch({ type: GET_JOBS_BEGIN })
+  try {
+    const { data } = await authFetch(url)
+    const { jobs, totalJobs, numOfPages } = data
+    dispatch({
+      type: GET_JOBS_SUCCESS,
+      payload: {
+        jobs,
+        totalJobs,
+        numOfPages,
+      },
+    })
+  } catch (error) {
+    logoutUser()
+  }
+  clearAlert()
+}
+
+getJobs()
+```
+
+```js
+reducer.js
+
+if (action.type === GET_JOBS_BEGIN) {
+  return { ...state, isLoading: true, showAlert: false }
+}
+if (action.type === GET_JOBS_SUCCESS) {
+  return {
+    ...state,
+    isLoading: false,
+    jobs: action.payload.jobs,
+    totalJobs: action.payload.totalJobs,
+    numOfPages: action.payload.numOfPages,
+  }
+}
+```
+
+#### AllJobs Page Setup
+
+- create
+- SearchContainer export
+- JobsContainer export
+- Job
+- JobInfo
+
+```js
+AllJobs.js
+
+import { JobsContainer, SearchContainer } from '../../components'
+const AllJobs = () => {
+  return (
+    <>
+      <SearchContainer />
+      <JobsContainer />
+    </>
+  )
+}
+
+export default AllJobs
+```
+
+```js
+import { useAppContext } from '../context/appContext'
+import { useEffect } from 'react'
+import Loading from './Loading'
+import Job from './Job'
+import Wrapper from '../assets/wrappers/JobsContainer'
+
+const JobsContainer = () => {
+  const { getJobs, jobs, isLoading, page, totalJobs } = useAppContext()
+  useEffect(() => {
+    getJobs()
+  }, [])
+
+  if (isLoading) {
+    return <Loading center />
+  }
+  if (jobs.length === 0) {
+    return (
+      <Wrapper>
+        <h2>No jobs to display...</h2>
+      </Wrapper>
+    )
+  }
+  return (
+    <Wrapper>
+      <h5>
+        {totalJobs} job{jobs.length > 1 && 's'} found
+      </h5>
+      <div className='jobs'>
+        {jobs.map((job) => {
+          return <Job key={job._id} {...job} />
+        })}
+      </div>
+    </Wrapper>
+  )
+}
+
+export default JobsContainer
+```
+
+```js
+Job.js
+
+const Job = (props) => {
+  consol.log(props)
+  return <div>Single Job</div>
 }
 ```

@@ -56,15 +56,15 @@ export const initialState = {
   jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
   status: 'pending',
   statusOptions: ['pending', 'interview', 'declined'],
-  stats: {},
-  monthlyApplications: [],
   jobs: [],
   totalJobs: 0,
   // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
   page: 1,
   // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
-
   numOfPages: 1,
+
+  stats: {},
+  monthlyApplications: [],
   search: '',
   searchStatus: 'all',
   searchType: 'all',

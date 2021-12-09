@@ -17,6 +17,8 @@ const SearchContainer = () => {
   const handleSearch = (e) => {
     // mention page handle change reducer
     if (isLoading) return
+    // removed page from HANDLE_CHANGE, DON'T FORGET TO ADD IT !!!!!!!!!!
+
     handleChange({ name: e.target.name, value: e.target.value })
   }
   const handleSubmit = (e) => {

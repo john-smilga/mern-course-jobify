@@ -3123,17 +3123,17 @@ const JobSchema = new mongoose.Schema(
       enum: ['interview', 'declined', 'pending'],
       default: 'pending',
     },
+
+    jobType: {
+      type: String,
+      enum: ['full-time', 'part-time', 'remote', 'internship'],
+      default: 'full-time',
+    },
     jobLocation: {
       type: String,
       default: 'my city',
       required: true,
     },
-    jobType: {
-      type: String,
-      enum: ['full-time', 'part-time', 'remote', 'internship'],
-      required: true,
-    },
-
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
@@ -3166,5 +3166,382 @@ const createJob = async (req, res) => {
 
   const job = await Job.create(req.body)
   res.status(StatusCodes.CREATED).json({ job })
+}
+```
+
+#### Job State Values
+
+```js
+appContext.js
+const initialState = {
+  isEditing: false,
+  editJobId: '',
+  position: '',
+  company: '',
+  // jobLocation
+  jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
+  jobType: 'full-time',
+  statusOptions: ['pending', 'interview', 'declined'],
+  status: 'pending',
+}
+```
+
+#### AddJob Page - Setup
+
+```js
+import { FormRow, Alert } from '../../components'
+import { useAppContext } from '../../context/appContext'
+import Wrapper from '../../assets/wrappers/DashboardFormPage'
+const AddJob = () => {
+  const {
+    showAlert,
+    displayAlert,
+    position,
+    company,
+    jobLocation,
+    jobType,
+    jobTypeOptions,
+    status,
+    statusOptions,
+  } = useAppContext()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    if (!position || !company || !jobLocation) {
+      displayAlert()
+      return
+    }
+    console.log('create job')
+  }
+
+  const handleJobInput = (e) => {
+    const name = e.target.name
+    const value = e.target.value
+    console.log(`${name}:${value}`)
+  }
+
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h3>{isEditing ? 'edit job' : 'add job'} </h3>
+        {showAlert && <Alert />}
+
+        {/* position */}
+        <div className='form-center'>
+          <FormRow
+            type='text'
+            name='position'
+            value={position}
+            handleChange={handleJobInput}
+          />
+          {/* company */}
+          <FormRow
+            type='text'
+            name='company'
+            value={company}
+            handleChange={handleJobInput}
+          />
+          {/* location */}
+          <FormRow
+            type='text'
+            labelText='location'
+            name='jobLocation'
+            value={jobLocation}
+            handleChange={handleJobInput}
+          />
+          {/* job type */}
+
+          {/* job status */}
+
+          <div className='btn-container'>
+            <button
+              className='btn btn-block submit-btn'
+              type='submit'
+              onClick={handleSubmit}
+            >
+              submit
+            </button>
+          </div>
+        </div>
+      </form>
+    </Wrapper>
+  )
+}
+
+export default AddJob
+```
+
+#### Select Input
+
+```js
+return (
+  // job type
+  <div className='form-row'>
+    <label htmlFor='jobType' className='form-label'>
+      job type
+    </label>
+
+    <select
+      name='jobType'
+      value={jobType}
+      onChange={handleJobInput}
+      className='form-select'
+    >
+      {jobTypeOptions.map((itemValue, index) => {
+        return (
+          <option key={index} value={itemValue}>
+            {itemValue}
+          </option>
+        )
+      })}
+    </select>
+  </div>
+)
+```
+
+#### FormRowSelect
+
+- create FormRowSelect in components
+- setup import/export
+
+```js
+const FormRowSelect = ({ labelText, name, value, handleChange, list }) => {
+  return (
+    <div className='form-row'>
+      <label htmlFor={name} className='form-label'>
+        {labelText || name}
+      </label>
+
+      <select
+        name={name}
+        value={value}
+        onChange={handleChange}
+        className='form-select'
+      >
+        {list.map((itemValue, index) => {
+          return (
+            <option key={index} value={itemValue}>
+              {itemValue}
+            </option>
+          )
+        })}
+      </select>
+    </div>
+  )
+}
+
+export default FormRowSelect
+```
+
+```js
+AddJob.js
+
+return (
+  <>
+    {/* job status */}
+
+    <FormRowSelect
+      name='status'
+      value={status}
+      handleChange={handleJobInput}
+      list={statusOptions}
+    />
+
+    {/* job type */}
+    <FormRowSelect
+      labelText='type'
+      name='jobType'
+      value={jobType}
+      handleChange={handleJobInput}
+      list={jobTypeOptions}
+    />
+  </>
+)
+```
+
+#### Change State Values With Handle Change
+
+- [JS Nuggets Dynamic Keys](https://youtu.be/_qxCYtWm0tw)
+
+```js
+actions.js
+
+export const HANDLE_CHANGE = 'HANDLE_CHANGE'
+```
+
+```js
+appContext.js
+
+const handleChange = ({ name, value }) => {
+  dispatch({
+    type: HANDLE_CHANGE,
+    payload: { name, value },
+  })
+}
+
+value={{handleChange}}
+```
+
+```js
+reducer.js
+
+if (action.type === HANDLE_CHANGE) {
+  return { ...state, [action.payload.name]: action.payload.value }
+}
+```
+
+```js
+AddJob.js
+
+const { handleChange } = useAppContext()
+
+const handleJobInput = (e) => {
+  handleChange({ name: e.target.name, value: e.target.value })
+}
+```
+
+#### Clear Values
+
+```js
+actions.js
+
+export const CLEAR_VALUES = 'CLEAR_VALUES'
+```
+
+```js
+appContext.js
+
+const clearValues = () => {
+    dispatch({ type: CLEAR_VALUES })
+  }
+
+value={{clearValues}}
+```
+
+```js
+reducer.js
+
+if (action.type === CLEAR_VALUES) {
+  const initialState = {
+    isEditing: false,
+    editJobId: '',
+    position: '',
+    company: '',
+    jobLocation: state.userLocation,
+    jobType: 'full-time',
+    status: 'pending',
+  }
+  return { ...state, ...initialState }
+}
+```
+
+```js
+AddJob.js
+
+const { clearValues } = useAppContext()
+
+return (
+  <div className='btn-container'>
+    {/* submit button */}
+
+    <button
+      className='btn btn-block clear-btn'
+      onClick={(e) => {
+        e.preventDefault()
+        clearValues()
+      }}
+    >
+      clear
+    </button>
+  </div>
+)
+```
+
+#### Create Job
+
+```js
+actions.js
+
+export const CREATE_JOB_BEGIN = 'CREATE_JOB_BEGIN'
+export const CREATE_JOB_SUCCESS = 'CREATE_JOB_SUCCESS'
+export const CREATE_JOB_ERROR = 'CREATE_JOB_ERROR'
+```
+
+```js
+appContext.js
+
+const createJob = async () => {
+  dispatch({ type: CREATE_JOB_BEGIN })
+  try {
+    const { position, company, jobLocation, jobType, status, token } = state
+
+    await authFetch.post('/jobs', {
+      company,
+      position,
+      jobLocation,
+      jobType,
+      status,
+    })
+    dispatch({
+      type: CREATE_JOB_SUCCESS,
+    })
+    // call function instead clearValues()
+    dispatch({ type: CLEAR_VALUES })
+  } catch (error) {
+    if (error.response.status === 401) return
+    dispatch({
+      type: CREATE_JOB_ERROR,
+      payload: { msg: error.response.data.msg },
+    })
+  }
+  clearAlert()
+}
+```
+
+```js
+AddJob.js
+
+const { createJob } = useAppContext()
+
+const handleSubmit = (e) => {
+  e.preventDefault()
+  // while testing
+
+  // if (!position || !company || !jobLocation) {
+  //   displayAlert()
+  //   return
+  // }
+  if (isEditing) {
+    // eventually editJob()
+    return
+  }
+  createJob()
+}
+```
+
+```js
+reducer.js
+
+if (action.type === CREATE_JOB_BEGIN) {
+  return { ...state, isLoading: true }
+}
+if (action.type === CREATE_JOB_SUCCESS) {
+  return {
+    ...state,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'success',
+    alertText: 'New Job Created!',
+  }
+}
+if (action.type === CREATE_JOB_ERROR) {
+  return {
+    ...state,
+    isLoading: false,
+    showAlert: true,
+    alertType: 'danger',
+    alertText: action.payload.msg,
+  }
 }
 ```

@@ -3554,6 +3554,7 @@ jobsController.js
 
 const getAllJobs = async (req, res) => {
   const jobs = await Job.find({ createdBy: req.user.userId })
+
   res
     .status(StatusCodes.OK)
     .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
@@ -3568,8 +3569,8 @@ appContext.js
 const initialState = {
   jobs: [],
   totalJobs: 0,
-  page: 1,
   numOfPages: 1,
+  page: 1,
 }
 ```
 
@@ -3583,6 +3584,8 @@ export const GET_JOBS_SUCCESS = 'GET_JOBS_SUCCESS'
 
 ```js
 appContext.js
+
+import React, { useReducer, useContext, useEffect } from 'react'
 
 const getJobs = async () => {
   let url = `/jobs`
@@ -3600,12 +3603,18 @@ const getJobs = async () => {
       },
     })
   } catch (error) {
+    console.log(error.response)
     logoutUser()
   }
   clearAlert()
 }
 
-getJobs()
+useEffect(() => {
+  getJobs()
+}, [])
+
+value={{getJobs}}
+
 ```
 
 ```js
@@ -3650,6 +3659,7 @@ export default AllJobs
 ```
 
 ```js
+JobsContainer.js
 import { useAppContext } from '../context/appContext'
 import { useEffect } from 'react'
 import Loading from './Loading'
@@ -3692,8 +3702,207 @@ export default JobsContainer
 ```js
 Job.js
 
-const Job = (props) => {
-  consol.log(props)
-  return <div>Single Job</div>
+import moment from 'moment'
+
+const Job = ({ company }) => {
+  return <h5>{company}</h5>
+}
+
+export default Job
+```
+
+#### Moment.js
+
+- Format Dates
+- [moment.js](https://momentjs.com/)
+
+- stop server
+- cd client
+
+```sh
+npm install moment
+
+```
+
+```js
+Job.js
+
+import moment from 'moment'
+
+const Job = ({ company, createdAt }) => {
+  let date = moment(createdAt)
+  date = date.format('MMM Do, YYYY')
+  return (
+    <div>
+      <h5>{company}</h5>
+      <h5>{date}</h5>
+    </div>
+  )
+}
+
+export default Job
+```
+
+#### Job Component - Setup
+
+```js
+appContext.js
+
+const setEditJob = (id) => {
+  console.log(`set edit job : ${id}`)
+}
+const deleteJob = (id) =>{
+  console.log(`delete : ${id}`)
+}
+value={{setEditJob,deleteJob}}
+```
+
+```js
+Job.js
+
+import { FaLocationArrow, FaBriefcase, FaCalendarAlt } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { useAppContext } from '../context/appContext'
+import Wrapper from '../assets/wrappers/Job'
+import JobInfo from './JobInfo'
+
+const Job = ({
+  _id,
+  position,
+  company,
+  jobLocation,
+  jobType,
+  createdAt,
+  status,
+}) => {
+  const { setEditJob, deleteJob } = useAppContext()
+
+  let date = moment(createdAt)
+  date = date.format('MMM Do, YYYY')
+
+  return (
+    <Wrapper>
+      <header>
+        <div className='main-icon'>{company.charAt(0)}</div>
+        <div className='info'>
+          <h5>{position}</h5>
+          <p>{company}</p>
+        </div>
+      </header>
+      <div className='content'>
+        {/* content center later */}
+        <footer>
+          <div className='actions'>
+            <Link
+              to='/add-job'
+              onClick={() => setEditJob(_id)}
+              className='btn edit-btn'
+            >
+              Edit
+            </Link>
+            <button
+              type='button'
+              className='btn delete-btn'
+              onClick={() => deleteJob(_id)}
+            >
+              Delete
+            </button>
+          </div>
+        </footer>
+      </div>
+    </Wrapper>
+  )
+}
+
+export default Job
+```
+
+#### JobInfo
+
+```js
+JobInfo.js
+
+import Wrapper from '../assets/wrappers/JobInfo'
+
+const JobInfo = ({ icon, text }) => {
+  return (
+    <Wrapper>
+      <span className='icon'>{icon}</span>
+      <span className='text'>{text}</span>
+    </Wrapper>
+  )
+}
+
+export default JobInfo
+```
+
+```js
+Job.js
+return (
+  <div className='content'>
+    <div className='content-center'>
+      <JobInfo icon={<FaLocationArrow />} text={jobLocation} />
+      <JobInfo icon={<FaCalendarAlt />} text={date} />
+      <JobInfo icon={<FaBriefcase />} text={jobType} />
+      <div className={`status ${status}`}>{status}</div>
+    </div>
+    {/* footer content */}
+  </div>
+)
+```
+
+#### SetEditJob
+
+```js
+actions.js
+export const SET_EDIT_JOB = 'SET_EDIT_JOB'
+```
+
+```js
+appContext.js
+
+const setEditJob = (id) => {
+  dispatch({ type: SET_EDIT_JOB, payload: { id } })
+}
+const editJob = () => {
+  console.log('edit job')
+}
+value={{editJob}}
+```
+
+```js
+reducer.js
+
+if (action.type === SET_EDIT_JOB) {
+  const job = state.jobs.find((job) => job._id === action.payload.id)
+  const { _id, position, company, jobLocation, jobType, status } = job
+  return {
+    ...state,
+    isEditing: true,
+    editJobId: _id,
+    position,
+    company,
+    jobLocation,
+    jobType,
+    status,
+  }
+}
+```
+
+```js
+AddJob.js
+const { isEditing, editJob } = useAppContext()
+const handleSubmit = (e) => {
+  e.preventDefault()
+
+  if (!position || !company || !jobLocation) {
+    displayAlert()
+    return
+  }
+  if (isEditing) {
+    editJob()
+    return
+  }
+  createJob()
 }
 ```

@@ -67,7 +67,6 @@ const updateJob = async (req, res) => {
     user: { userId },
     params: { id: jobId },
   } = req
-
   const job = await Job.findByIdAndUpdate(
     { _id: jobId, createdBy: userId },
     body,

@@ -4169,6 +4169,9 @@ const showStats = async (req, res) => {
 
 #### Show Stats - Object Setup
 
+- [Reduce Basics](https://youtu.be/3WkW9nrS2mw)
+- [Reduce Object Example ](https://youtu.be/5BFkp8JjLEY)
+
 ```js
 jobsController.js
 
@@ -4177,6 +4180,7 @@ const showStats = async (req, res) => {
     { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
     { $group: { _id: '$status', count: { $sum: 1 } } },
   ])
+
   stats = stats.reduce((acc, curr) => {
     const { _id: title, count } = curr
     acc[title] = count

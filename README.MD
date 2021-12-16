@@ -3937,3 +3937,143 @@ const updateJob = async (req, res) => {
   res.status(StatusCodes.OK).json({ updatedJob })
 }
 ```
+
+#### Alternative Approach
+
+- optional
+- multiple approaches
+- different setups
+- course Q&A
+
+```js
+jobsController.js
+const updateJob = async (req, res) => {
+  const { id: jobId } = req.params
+  const { company, position, status } = req.body
+
+  if (!position || !company) {
+    throw new BadRequestError('Please provide all values')
+  }
+  const job = await Job.findOne({ _id: jobId })
+
+  if (!job) {
+    throw new NotFoundError(`No job with id :${jobId}`)
+  }
+
+  // check permissions
+
+  // alternative approach
+
+  job.position = position
+  job.company = company
+  job.status = status
+
+  await job.save()
+  res.status(StatusCodes.OK).json({ job })
+}
+```
+
+#### Check Permissions
+
+```js
+jobsController.js
+
+const updateJob = async (req, res) => {
+  const { id: jobId } = req.params
+  const { company, position, status } = req.body
+
+  if (!position || !company) {
+    throw new BadRequestError('Please provide all values')
+  }
+  const job = await Job.findOne({ _id: jobId })
+
+  if (!job) {
+    throw new NotFoundError(`No job with id :${jobId}`)
+  }
+
+  // check permissions
+  // req.user.userId (string) === job.createdBy(object)
+
+  // console.log(typeof req.user.userId)
+  // console.log(typeof job.createdBy)
+
+  checkPermissions(req.user, job.createdBy)
+
+  const updatedJob = await Job.findOneAndUpdate({ _id: jobId }, req.body, {
+    new: true,
+    runValidators: true,
+  })
+
+  res.status(StatusCodes.OK).json({ updatedJob })
+}
+```
+
+- utils folder
+- checkPermissions.js
+- import in jobsController.js
+- refactor CustomError in jobsController.js
+
+```js
+checkPermissions.js
+
+import CustomError from '../errors/index.js'
+
+const checkPermissions = (requestUser, resourceUserId) => {
+  // if (requestUser.role === 'admin') return
+  if (requestUser.userId === resourceUserId.toString()) return
+  throw new CustomError.UnauthorizedError('Not authorized to access this route')
+}
+
+export default checkPermissions
+```
+
+#### Remove/Delete Job
+
+```js
+jobsController.js
+
+const deleteJob = async (req, res) => {
+  const { id: jobId } = req.params
+
+  const job = await Job.findOne({ _id: jobId })
+
+  if (!job) {
+    throw new CustomError.NotFoundError(`No job with id : ${jobId}`)
+  }
+
+  checkPermissions(req.user, job.createdBy)
+
+  await job.remove()
+  res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' })
+}
+```
+
+#### Delete Job - Front End
+
+```js
+actions.js
+
+export const DELETE_JOB_BEGIN = 'DELETE_JOB_BEGIN'
+```
+
+```js
+appContext.js
+
+const deleteJob = async (jobId) => {
+  dispatch({ type: DELETE_JOB_BEGIN })
+  try {
+    await authFetch.delete(`/jobs/${jobId}`)
+    getJobs()
+  } catch (error) {
+    logoutUser()
+  }
+}
+```
+
+```js
+reducer.js
+
+if (action.type === DELETE_JOB_BEGIN) {
+  return { ...state, isLoading: true }
+}
+```

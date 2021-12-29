@@ -4286,7 +4286,8 @@ const showStats = async () => {
 console.log(error.response)
       // logoutUser()
     }
-    clearAlert()
+
+clearAlert()
   }
   value={{showStats}}
 ```
@@ -4306,7 +4307,7 @@ if (action.type === SHOW_STATS_SUCCESS) {
 }
 ```
 
-#### Stats Page - Fetch Stats
+#### Stats Page - Structure
 
 - components
 - StatsContainer.js
@@ -4410,4 +4411,171 @@ function StatItem({ count, title, icon, color, bcg }) {
 }
 
 export default StatItem
+```
+
+#### Aggregate Jobs Based on Year and Month
+
+```js
+jobsController.js
+
+let monthlyApplications = await Job.aggregate([
+  { $match: { createdBy: mongoose.Types.ObjectId(req.user.userId) } },
+  {
+    $group: {
+      _id: {
+        year: {
+          $year: '$createdAt',
+        },
+        month: {
+          $month: '$createdAt',
+        },
+      },
+      count: { $sum: 1 },
+    },
+  },
+  { $sort: { '_id.year': -1, '_id.month': -1 } },
+  { $limit: 6 },
+])
+```
+
+#### Refactor Data
+
+- install moment.js on the SERVER
+
+```sh
+npm install moment
+
+```
+
+```js
+jobsController.js
+
+import moment from 'moment'
+
+monthlyApplications = monthlyApplications
+  .map((item) => {
+    const {
+      _id: { year, month },
+      count,
+    } = item
+    // accepts 0-11
+    const date = moment()
+      .month(month - 1)
+      .year(year)
+      .format('MMM Y')
+    return { date, count }
+  })
+  .reverse()
+```
+
+#### Charts Container
+
+- BarChart.js
+- AreaChart.js
+
+```js
+ChartsContainer.js
+import React, { useState } from 'react'
+
+import BarChart from './BarChart'
+import AreaChart from './AreaChart'
+import { useAppContext } from '../context/appContext'
+import Wrapper from '../assets/wrappers/ChartsContainer'
+
+export default function ChartsContainer() {
+  const [barChart, setBarChart] = useState(true)
+  const { monthlyApplications: data } = useAppContext()
+
+  return (
+    <Wrapper>
+      <h4>Monthly Applications</h4>
+
+      <button type='button' onClick={() => setBarChart(!barChart)}>
+        {barChart ? 'AreaChart' : 'BarChart'}
+      </button>
+      {barChart ? <BarChart data={data} /> : <AreaChart data={data} />}
+    </Wrapper>
+  )
+}
+```
+
+#### Recharts Library
+
+- install in the Front-End!!!
+
+[Recharts](https://recharts.org)
+
+```sh
+npm install recharts
+```
+
+#### Bar Chart
+
+```js
+BarChart.js
+import React from 'react'
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
+
+export default function Chart({ data }) {
+  return (
+    <ResponsiveContainer width='100%' height={300}>
+      <BarChart
+        data={data}
+        margin={{
+          top: 50,
+        }}
+      >
+        <CartesianGrid strokeDasharray='3 3' />
+        <XAxis dataKey='date' />
+        <YAxis allowDecimals={false} />
+        <Tooltip />
+        <Bar dataKey='count' fill='#2cb1bc' barSize={75} />
+      </BarChart>
+    </ResponsiveContainer>
+  )
+}
+```
+
+#### Area Chart
+
+```js
+import React from 'react'
+
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts'
+
+export default function Chart({ data }) {
+  return (
+    <ResponsiveContainer width='100%' height={300}>
+      <AreaChart
+        data={data}
+        margin={{
+          top: 50,
+        }}
+      >
+        <CartesianGrid strokeDasharray='3 3' />
+        <XAxis dataKey='date' />
+        <YAxis allowDecimals={false} />
+        <Tooltip />
+        <Area type='monotone' dataKey='count' stroke='#2cb1bc' fill='#bef8fd' />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+}
 ```

@@ -4154,12 +4154,13 @@ if (action.type === EDIT_JOB_ERROR) {
 ```js
 populate.js
 
-require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
 
-const connectDB = require('./db/connect')
-const Job = require('./models/Job')
+import connectDB from './db/connect.js'
+import Job from './models/Job.js'
 
-const jsonProducts = require('./mock-data.json')
+import jsonProducts from './mock-data.json'
 
 const start = async () => {
   try {

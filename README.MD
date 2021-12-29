@@ -4144,12 +4144,43 @@ if (action.type === EDIT_JOB_ERROR) {
 
 #### Create More Jobs
 
-- 2 pending, 2 interview, 2 declined
+- [Mockaroo](https://www.mockaroo.com/)
+- setup mock-data.json in the root
+
+#### Populate Database
+
+- create populate.js in the root
+
+```js
+populate.js
+
+require('dotenv').config()
+
+const connectDB = require('./db/connect')
+const Job = require('./models/Job')
+
+const jsonProducts = require('./mock-data.json')
+
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URL)
+    await Job.deleteMany()
+    await Job.create(jsonProducts)
+    console.log('Success!!!!')
+    process.exit(0)
+  } catch (error) {
+    console.log(error)
+    process.exit(1)
+  }
+}
+
+start()
+```
 
 #### Show Stats - Structure
 
 - aggregation pipeline
-- quite a few logs
+- step by step
 - [Aggregation Pipeline](https://docs.mongodb.com/manual/core/aggregation-pipeline/)
 
 ```js

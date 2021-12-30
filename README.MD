@@ -4749,14 +4749,14 @@ const SearchContainer = () => {
   const {
     isLoading,
     search,
-    handleChange,
     searchStatus,
-    statusOptions,
-    jobTypeOptions,
     searchType,
-    clearFilters,
     sort,
     sortOptions,
+    statusOptions,
+    jobTypeOptions,
+    handleChange,
+    clearFilters,
   } = useAppContext()
 
   const handleSearch = (e) => {
@@ -4794,6 +4794,7 @@ SearchContainer.js
 import { FormRow, FormRowSelect } from '.'
 import { useAppContext } from '../context/appContext'
 import Wrapper from '../assets/wrappers/SearchContainer'
+
 const SearchContainer = () => {
   const {
     isLoading,
@@ -4830,7 +4831,7 @@ const SearchContainer = () => {
           ></FormRow>
           {/* search by status */}
           <FormRowSelect
-            labelText='status'
+            labelText='job status'
             name='searchStatus'
             value={searchStatus}
             handleChange={handleSearch}
@@ -4839,7 +4840,7 @@ const SearchContainer = () => {
           {/* search by type */}
 
           <FormRowSelect
-            labelText='type'
+            labelText='job type'
             name='searchType'
             value={searchType}
             handleChange={handleSearch}
@@ -4848,7 +4849,6 @@ const SearchContainer = () => {
           {/* sort */}
 
           <FormRowSelect
-            labelText='sort'
             name='sort'
             value={sort}
             handleChange={handleSearch}
@@ -4904,6 +4904,7 @@ if (action.type === CLEAR_FILTERS) {
 
 ```js
 const getJobs = async () => {
+  // will add page later
   const { search, searchStatus, searchType, sort } = state
   let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}`
   if (search) {
@@ -4948,4 +4949,150 @@ const JobsContainer = () => {
     getJobs()
   }, [ search, searchStatus, searchType, sort])
 
+```
+
+#### Limit and Skip
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+  if (search) {
+    queryObject.position = { $regex: search, $options: 'i' }
+  }
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+  if (jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+  let result = Job.find(queryObject)
+
+  if (sort === 'latest') {
+    result = result.sort('-createdAt')
+  }
+  if (sort === 'oldest') {
+    result = result.sort('createdAt')
+  }
+  if (sort === 'a-z') {
+    result = result.sort('position')
+  }
+  if (sort === 'z-a') {
+    result = result.sort('-position')
+  }
+
+  const totalJobs = await result
+
+  // setup pagination
+  const limit = 10
+  const skip = 1
+
+  result = result.skip(skip).limit(limit)
+  // 23
+  // 4 7 7 7 2
+  const jobs = await result
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### Page and Limit
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+  if (search) {
+    queryObject.position = { $regex: search, $options: 'i' }
+  }
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+  if (jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+  let result = Job.find(queryObject)
+
+  if (sort === 'latest') {
+    result = result.sort('-createdAt')
+  }
+  if (sort === 'oldest') {
+    result = result.sort('createdAt')
+  }
+  if (sort === 'a-z') {
+    result = result.sort('position')
+  }
+  if (sort === 'z-a') {
+    result = result.sort('-position')
+  }
+
+  const totalJobs = await result
+
+  // setup pagination
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10
+  const skip = (page - 1) * limit
+  result = result.skip(skip).limit(limit)
+  // 75
+  // 10 10 10 10 10 10 10 5
+  const jobs = await result
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### Total Jobs and Number Of Pages
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+  if (search) {
+    queryObject.position = { $regex: search, $options: 'i' }
+  }
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+  if (jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+  let result = Job.find(queryObject)
+
+  if (sort === 'latest') {
+    result = result.sort('-createdAt')
+  }
+  if (sort === 'oldest') {
+    result = result.sort('createdAt')
+  }
+  if (sort === 'a-z') {
+    result = result.sort('position')
+  }
+  if (sort === 'z-a') {
+    result = result.sort('-position')
+  }
+
+  const totalJobs = await result
+  const numOfPages = Math.ceil(totalJobs.length / limit)
+
+  // setup pagination
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10
+  const skip = (page - 1) * limit
+  result = result.skip(skip).limit(limit)
+
+  const jobs = await result
+  res
+    .status(StatusCodes.OK)
+    .json({ jobs, totalJobs: totalJobs.length, numOfPages })
+}
 ```

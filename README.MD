@@ -4501,7 +4501,7 @@ export default function ChartsContainer() {
 
 #### Recharts Library
 
-- install in the Front-End!!!
+- install in the Client!!!
 
 [Recharts](https://recharts.org)
 
@@ -4513,7 +4513,6 @@ npm install recharts
 
 ```js
 BarChart.js
-import React from 'react'
 
 import {
   BarChart,
@@ -4525,7 +4524,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-export default function Chart({ data }) {
+const BarChartComponent = ({ data }) => {
   return (
     <ResponsiveContainer width='100%' height={300}>
       <BarChart
@@ -4548,8 +4547,6 @@ export default function Chart({ data }) {
 #### Area Chart
 
 ```js
-import React from 'react'
-
 import {
   ResponsiveContainer,
   AreaChart,
@@ -4560,7 +4557,7 @@ import {
   Tooltip,
 } from 'recharts'
 
-export default function Chart({ data }) {
+const AreaChartComponent = ({ data }) => {
   return (
     <ResponsiveContainer width='100%' height={300}>
       <AreaChart
@@ -4578,4 +4575,347 @@ export default function Chart({ data }) {
     </ResponsiveContainer>
   )
 }
+```
+
+#### Filter
+
+#### Get All Jobs - Initial Setup
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+
+  // NO AWAIT
+  let result = Job.find(queryObject)
+
+  // chain sort conditions
+
+  const jobs = await result
+
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### Status
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+
+  // NO AWAIT
+  let result = Job.find(queryObject)
+
+  // chain sort conditions
+
+  const jobs = await result
+
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### JobType
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+  if (jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+  // NO AWAIT
+  let result = Job.find(queryObject)
+
+  // chain sort conditions
+
+  const jobs = await result
+
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### Search
+
+```js
+jobsController.js
+
+const getAllJobs = async (req, res) => {
+  const { search, status, jobType, sort } = req.query
+
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+
+  if (status !== 'all') {
+    queryObject.status = status
+  }
+  if (jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+  if (search) {
+    queryObject.position = { $regex: search, $options: 'i' }
+  }
+  // NO AWAIT
+  let result = Job.find(queryObject)
+
+  // chain sort conditions
+  if (sort === 'latest') {
+    result = result.sort('-createdAt')
+  }
+  if (sort === 'oldest') {
+    result = result.sort('createdAt')
+  }
+  if (sort === 'a-z') {
+    result = result.sort('position')
+  }
+  if (sort === 'z-a') {
+    result = result.sort('-position')
+  }
+  const jobs = await result
+
+  res.status(StatusCodes.OK).json({ jobs, totalJobs: jobs.length, numOfPages })
+}
+```
+
+#### Search Context Setup
+
+```js
+appContext.js
+
+const initialState = {
+  jobType: 'full-time',
+  jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
+  status: 'pending',
+  statusOptions: ['pending', 'interview', 'declined']
+  //
+  //
+  //
+  search: '',
+  searchStatus: 'all',
+  searchType: 'all',
+  sort: 'latest',
+  sortOptions: ['latest', 'oldest', 'a-z', 'z-a'],
+}
+
+const clearFilters = () =>{
+console.log('clear filters')
+}
+
+value={{clearFilters}}
+
+// remember this function :)
+const handleChange = ({ name, value }) => {
+    dispatch({
+      type: HANDLE_CHANGE,
+      payload: { name, value },
+    })
+  }
+
+```
+
+#### Search Container - Setup
+
+```js
+SearchContainer.js
+
+import { FormRow, FormRowSelect } from '.'
+import { useAppContext } from '../context/appContext'
+import Wrapper from '../assets/wrappers/SearchContainer'
+const SearchContainer = () => {
+  const {
+    isLoading,
+    search,
+    handleChange,
+    searchStatus,
+    statusOptions,
+    jobTypeOptions,
+    searchType,
+    clearFilters,
+    sort,
+    sortOptions,
+  } = useAppContext()
+
+  const handleSearch = (e) => {
+    if (isLoading) return
+    handleChange({ name: e.target.name, value: e.target.value })
+  }
+
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h4>search form</h4>
+        {/* search position */}
+        <div className='form-center'>
+          <FormRow
+            type='text'
+            name='search'
+            value={search}
+            handleChange={handleSearch}
+          ></FormRow>
+          {/* rest of the inputs */}
+        </div>
+      </form>
+    </Wrapper>
+  )
+}
+
+export default SearchContainer
+```
+
+#### Search Container - Complete
+
+```js
+SearchContainer.js
+
+import { FormRow, FormRowSelect } from '.'
+import { useAppContext } from '../context/appContext'
+import Wrapper from '../assets/wrappers/SearchContainer'
+const SearchContainer = () => {
+  const {
+    isLoading,
+    search,
+    handleChange,
+    searchStatus,
+    statusOptions,
+    jobTypeOptions,
+    searchType,
+    clearFilters,
+    sort,
+    sortOptions,
+  } = useAppContext()
+
+  const handleSearch = (e) => {
+    if (isLoading) return
+    handleChange({ name: e.target.name, value: e.target.value })
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    clearFilters()
+  }
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h4>search form</h4>
+        {/* search position */}
+        <div className='form-center'>
+          <FormRow
+            type='text'
+            name='search'
+            value={search}
+            handleChange={handleSearch}
+          ></FormRow>
+          {/* search by status */}
+          <FormRowSelect
+            labelText='status'
+            name='searchStatus'
+            value={searchStatus}
+            handleChange={handleSearch}
+            list={['all', ...statusOptions]}
+          ></FormRowSelect>
+          {/* search by type */}
+
+          <FormRowSelect
+            labelText='type'
+            name='searchType'
+            value={searchType}
+            handleChange={handleSearch}
+            list={['all', ...jobTypeOptions]}
+          ></FormRowSelect>
+          {/* sort */}
+
+          <FormRowSelect
+            labelText='sort'
+            name='sort'
+            value={sort}
+            handleChange={handleSearch}
+            list={sortOptions}
+          ></FormRowSelect>
+          <button
+            className='btn btn-block btn-danger'
+            disabled={isLoading}
+            onClick={handleSubmit}
+          >
+            clear filters
+          </button>
+        </div>
+      </form>
+    </Wrapper>
+  )
+}
+
+export default SearchContainer
+```
+
+#### Refactor Get All Jobs
+
+```js
+const getJobs = async () => {
+  const { search, searchStatus, searchType, sort } = state
+  let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+  if (search) {
+    url = url + `&search=${search}`
+  }
+  dispatch({ type: GET_JOBS_BEGIN })
+  try {
+    const { data } = await authFetch(url)
+    const { jobs, totalJobs, numOfPages } = data
+    dispatch({
+      type: GET_JOBS_SUCCESS,
+      payload: {
+        jobs,
+        totalJobs,
+        numOfPages,
+      },
+    })
+  } catch (error) {
+    // logoutUser()
+  }
+  clearAlert()
+}
+```
+
+```js
+JobsContainer.js
+
+const JobsContainer = () => {
+  const {
+    getJobs,
+    jobs,
+    isLoading,
+    page,
+    totalJobs,
+    search,
+    searchStatus,
+    searchType,
+    sort,
+
+  } = useAppContext()
+  useEffect(() => {
+    getJobs()
+  }, [ search, searchStatus, searchType, sort])
+
 ```

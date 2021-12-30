@@ -4870,6 +4870,36 @@ const SearchContainer = () => {
 export default SearchContainer
 ```
 
+#### Clear Filters
+
+```js
+actions.js
+
+export const CLEAR_FILTERS = 'CLEAR_FILTERS'
+```
+
+```js
+appContext.js
+
+const clearFilters = () => {
+  dispatch({ type: CLEAR_FILTERS })
+}
+```
+
+```js
+reducer.js
+
+if (action.type === CLEAR_FILTERS) {
+  return {
+    ...state,
+    search: '',
+    searchStatus: 'all',
+    searchType: 'all',
+    sort: 'latest',
+  }
+}
+```
+
 #### Refactor Get All Jobs
 
 ```js

@@ -244,7 +244,13 @@ const reducer = (state, action) => {
     return { ...state, page: action.payload.page }
   }
   if (action.type === CLEAR_FILTERS) {
-    return { ...state, search: '', searchStatus: 'all', searchType: 'all' }
+    return {
+      ...state,
+      search: '',
+      searchStatus: 'all',
+      searchType: 'all',
+      sort: 'latest',
+    }
   }
   throw new Error(`no such action : ${action}`)
 }

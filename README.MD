@@ -5106,3 +5106,29 @@ const getAllJobs = async (req, res) => {
   res.status(StatusCodes.OK).json({ jobs, totalJobs, numOfPages })
 }
 ```
+
+#### PageBtnContainer Setup
+
+- PageBtnContainer.js
+
+```js
+JobsContainer.js
+
+import PageBtnContainer from './PageBtnContainer'
+
+const { numOfPages } = useAppContext()
+
+return (
+  <Wrapper>
+    <h5>
+      {totalJobs} job{jobs.length > 1 && 's'} found
+    </h5>
+    <div className='jobs'>
+      {jobs.map((job) => {
+        return <Job key={job._id} {...job} />
+      })}
+    </div>
+    {numOfPages > 1 && <PageBtnContainer />}
+  </Wrapper>
+)
+```

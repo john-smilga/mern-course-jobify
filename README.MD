@@ -5132,3 +5132,73 @@ return (
   </Wrapper>
 )
 ```
+
+#### PageBtnContainer - Structure
+
+-
+
+```js
+PageBtnContainer.js
+
+import { useAppContext } from '../context/appContext'
+import { HiChevronDoubleLeft, HiChevronDoubleRight } from 'react-icons/hi'
+import Wrapper from '../assets/wrappers/PageBtnContainer'
+
+const PageButtonContainer = () => {
+  const { numOfPages, page } = useAppContext()
+
+  const prevPage = () => {
+    console.log('prev page')
+  }
+  const nextPage = () => {
+    console.log('next page')
+  }
+
+  return (
+    <Wrapper>
+      <button className='prev-btn' onClick={prevPage}>
+        <HiChevronDoubleLeft />
+        prev
+      </button>
+
+      <div className='btn-container'>buttons</div>
+
+      <button className='next-btn' onClick={nextPage}>
+        next
+        <HiChevronDoubleRight />
+      </button>
+    </Wrapper>
+  )
+}
+
+export default PageButtonContainer
+```
+
+#### Button Container
+
+- [Array.from] (https://youtu.be/zg1Bv4xubwo)
+
+```js
+PageBtnContainer.js
+
+const pages = Array.from({ length: numOfPages }, (_, index) => {
+  return index + 1
+})
+
+return (
+  <div className='btn-container'>
+    {pages.map((pageNumber) => {
+      return (
+        <button
+          type='button'
+          className={pageNumber === page ? 'pageBtn active' : 'pageBtn'}
+          key={pageNumber}
+          onClick={() => changePage(pageNumber)}
+        >
+          {pageNumber}
+        </button>
+      )
+    })}
+  </div>
+)
+```

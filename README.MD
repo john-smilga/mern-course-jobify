@@ -5191,7 +5191,7 @@ return (
           type='button'
           className={pageNumber === page ? 'pageBtn active' : 'pageBtn'}
           key={pageNumber}
-          onClick={() => changePage(pageNumber)}
+          onClick={() => console.log(page)}
         >
           {pageNumber}
         </button>
@@ -5199,4 +5199,132 @@ return (
     })}
   </div>
 )
+```
+
+#### Change Page
+
+```js
+actions.js
+export const CHANGE_PAGE = 'CHANGE_PAGE'
+```
+
+```js
+appContext.js
+const changePage = (page) => {
+  dispatch({ type: CHANGE_PAGE, payload: { page } })
+}
+value={{changePage}}
+```
+
+```js
+reducer.js
+
+if (action.type === CHANGE_PAGE) {
+  return { ...state, page: action.payload.page }
+}
+```
+
+```js
+PageBtnContainer.js
+
+const { changePage } = useAppContext()
+return (
+  <button
+    type='button'
+    className={pageNumber === page ? 'pageBtn active' : 'pageBtn'}
+    key={pageNumber}
+    onClick={() => changePage(pageNumber)}
+  >
+    {pageNumber}
+  </button>
+)
+```
+
+#### Prev and Next Buttons
+
+```js
+PageBtnContainer.js
+const prevPage = () => {
+  let newPage = page - 1
+  if (newPage < 1) {
+    // newPage = 1
+    // alternative
+    newPage = numOfPages
+  }
+  changePage(newPage)
+}
+const nextPage = () => {
+  let newPage = page + 1
+  if (newPage > numOfPages) {
+    // newPage = numOfPages
+    // alternative
+    newPage = 1
+  }
+  changePage(newPage)
+}
+```
+
+#### Trigger New Page
+
+```js
+appContext.js
+
+const getJobs = async () => {
+  const { page, search, searchStatus, searchType, sort } = state
+
+  let url = `/jobs?page=${page}&status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+  // rest of the code
+}
+```
+
+```js
+JobsContainer.js
+
+const { page } = useAppContext()
+useEffect(() => {
+  getJobs()
+}, [page, search, searchStatus, searchType, sort])
+```
+
+```js
+reducer.js
+
+if (action.type === HANDLE_CHANGE) {
+  // set back to first page
+
+  return { ...state, page: 1, [action.payload.name]: action.payload.value }
+}
+```
+
+#### Production Setup - package.json
+
+- uncomment logoutUser() in appContext
+- create front-end production application
+
+```js
+package.json
+"scripts": {
+    "build-client": "cd client && npm run build",
+    "server": "nodemon server.js --ignore client",
+    "client": "cd client && npm run start",
+    "start-dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+    "start":"node server.js"
+  },
+
+```
+
+```js
+server.js
+
+// only when ready to deploy
+app.use(express.static(path.resolve(__dirname, './client/build')))
+
+// routes
+app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/jobs', authenticateUser, jobsRouter)
+
+// only when ready to deploy
+app.get('*', function (request, response) {
+  response.sendFile(path.resolve(__dirname, './client/build', 'index.html'))
+})
 ```

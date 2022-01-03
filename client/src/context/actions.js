@@ -34,5 +34,5 @@ export const EDIT_JOB_SUCCESS = 'EDIT_JOB_SUCCESS'
 export const EDIT_JOB_ERROR = 'EDIT_JOB_ERROR'
 
 export const DELETE_JOB_BEGIN = 'DELETE_JOB_BEGIN'
-export const CHANGE_PAGE = 'CHANGE_PAGE'
 export const CLEAR_FILTERS = 'CLEAR_FILTERS'
+export const CHANGE_PAGE = 'CHANGE_PAGE'

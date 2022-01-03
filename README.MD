@@ -5296,9 +5296,17 @@ if (action.type === HANDLE_CHANGE) {
 }
 ```
 
-#### Production Setup - package.json
+#### Production Setup - Fix Warnings and logoutUser
 
-- uncomment logoutUser() in appContext
+- getJobs,deleteJob,showStats - invoke logoutUser()
+- fix warnings
+
+```sh
+// eslint-disable-next-line
+```
+
+#### Production Setup - Build Front-End Application
+
 - create front-end production application
 
 ```js
@@ -5307,14 +5315,20 @@ package.json
     "build-client": "cd client && npm run build",
     "server": "nodemon server.js --ignore client",
     "client": "cd client && npm run start",
-    "start-dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
-    "start":"node server.js"
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
+
   },
 
 ```
 
 ```js
 server.js
+
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // only when ready to deploy
 app.use(express.static(path.resolve(__dirname, './client/build')))
@@ -5328,3 +5342,34 @@ app.get('*', function (request, response) {
   response.sendFile(path.resolve(__dirname, './client/build', 'index.html'))
 })
 ```
+
+#### Deploy To Heroku
+
+- heroku login
+
+```js
+package.json
+
+"engines": {
+    "node": "16.x"
+  }
+"scripts":{
+    "build-client": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build-client",
+}
+```
+
+```js
+Procfile
+
+web: node server.js
+```
+
+- rm -rf .git
+- git add .
+- git commit -m "first commit"
+- heroku create nameOfTheApp
+- git remote -v
+- add env variables
+- git push heroku main/master

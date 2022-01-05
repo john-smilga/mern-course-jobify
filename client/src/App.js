@@ -7,6 +7,7 @@ import {
   Stats,
   AddJob,
 } from './pages/dashboard'
+
 function App() {
   return (
     <BrowserRouter>

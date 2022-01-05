@@ -1,3 +1,4 @@
-const notFound = (req, res) => res.status(404).send('Route does not exist')
+const notFoundMiddleware = (req, res) =>
+  res.status(404).send('Route does not exist')
 
-export default notFound
+export default notFoundMiddleware

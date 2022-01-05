@@ -5343,6 +5343,44 @@ app.get('*', function (request, response) {
 })
 ```
 
+#### Security Packages
+
+- remove log in the error-handler
+- helmet
+- xss-clean
+- express-mongo-sanitize
+- express-rate-limit
+
+```js
+server.js
+
+import helmet from 'helmet'
+import xss from 'xss-clean'
+import mongoSanitize from 'express-mongo-sanitize'
+
+app.use(express.json())
+app.use(helmet())
+app.use(xss())
+app.use(mongoSanitize())
+```
+
+#### Limit Requests
+
+```js
+authRoutes.js
+
+import rateLimiter from 'express-rate-limit'
+
+const apiLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+})
+
+router.route('/register').post(apiLimiter, register)
+router.route('/login').post(apiLimiter, login)
+```
+
 #### Deploy To Heroku
 
 - heroku login
@@ -5367,6 +5405,7 @@ web: node server.js
 ```
 
 - rm -rf .git
+- git init
 - git add .
 - git commit -m "first commit"
 - heroku create nameOfTheApp

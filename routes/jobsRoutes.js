@@ -1,16 +1,16 @@
-import { Router } from 'express'
+import express from 'express'
+const router = express.Router()
 
-const router = Router()
 import {
   createJob,
   deleteJob,
   getAllJobs,
   updateJob,
   showStats,
-} from '../controllers/jobs.js'
+} from '../controllers/jobsController.js'
 
 router.route('/').post(createJob).get(getAllJobs)
-// place before :id
+// remember about :id
 router.route('/stats').get(showStats)
 router.route('/:id').delete(deleteJob).patch(updateJob)
 

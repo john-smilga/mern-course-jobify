@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   BarChart,
   Bar,
@@ -10,17 +8,11 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-export default function Chart({ data }) {
+const BarChartComponent = ({ data }) => {
   return (
     <ResponsiveContainer width='100%' height={300}>
-      <BarChart
-        height={300}
-        data={data}
-        margin={{
-          top: 50,
-        }}
-      >
-        <CartesianGrid strokeDasharray='3 3' />
+      <BarChart data={data} margin={{ top: 50 }}>
+        <CartesianGrid strokeDasharray='3 3 ' />
         <XAxis dataKey='date' />
         <YAxis allowDecimals={false} />
         <Tooltip />
@@ -29,3 +21,5 @@ export default function Chart({ data }) {
     </ResponsiveContainer>
   )
 }
+
+export default BarChartComponent

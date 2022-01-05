@@ -2,27 +2,30 @@ import { useAppContext } from '../context/appContext'
 import { useEffect } from 'react'
 import Loading from './Loading'
 import Job from './Job'
-import PageBtnContainer from './PageBtnContainer'
 import Wrapper from '../assets/wrappers/JobsContainer'
+import PageBtnContainer from './PageBtnContainer'
+
 const JobsContainer = () => {
   const {
     getJobs,
     jobs,
     isLoading,
     page,
+    totalJobs,
     search,
     searchStatus,
     searchType,
     sort,
-    totalJobs,
     numOfPages,
   } = useAppContext()
   useEffect(() => {
     getJobs()
+    // eslint-disable-next-line
   }, [page, search, searchStatus, searchType, sort])
   if (isLoading) {
     return <Loading center />
   }
+
   if (jobs.length === 0) {
     return (
       <Wrapper>
@@ -30,6 +33,7 @@ const JobsContainer = () => {
       </Wrapper>
     )
   }
+
   return (
     <Wrapper>
       <h5>

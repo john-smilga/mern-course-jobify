@@ -1,5 +1,5 @@
-import { FaLocationArrow, FaBriefcase, FaCalendarAlt } from 'react-icons/fa'
 import moment from 'moment'
+import { FaLocationArrow, FaBriefcase, FaCalendarAlt } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useAppContext } from '../context/appContext'
 import Wrapper from '../assets/wrappers/Job'
@@ -18,7 +18,6 @@ const Job = ({
 
   let date = moment(createdAt)
   date = date.format('MMM Do, YYYY')
-
   return (
     <Wrapper>
       <header>
@@ -39,8 +38,8 @@ const Job = ({
           <div className='actions'>
             <Link
               to='/add-job'
-              onClick={() => setEditJob(_id)}
               className='btn edit-btn'
+              onClick={() => setEditJob(_id)}
             >
               Edit
             </Link>

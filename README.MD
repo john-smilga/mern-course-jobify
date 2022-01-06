@@ -4312,7 +4312,7 @@ if (action.type === SHOW_STATS_SUCCESS) {
 - components
 - StatsContainer.js
 - ChartsContainer.js
-- StatsItem.js
+- StatItem.js
 - simple return
 - import/export index.js
 

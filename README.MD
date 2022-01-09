@@ -4312,7 +4312,7 @@ if (action.type === SHOW_STATS_SUCCESS) {
 - components
 - StatsContainer.js
 - ChartsContainer.js
-- StatItem.js
+- StatsItem.js
 - simple return
 - import/export index.js
 
@@ -5346,10 +5346,18 @@ app.get('*', function (request, response) {
 #### Security Packages
 
 - remove log in the error-handler
-- helmet
-- xss-clean
-- express-mongo-sanitize
-- express-rate-limit
+- [helmet](https://www.npmjs.com/package/helmet)
+  Helmet helps you secure your Express apps by setting various HTTP headers.
+- [xss-clean](https://www.npmjs.com/package/xss-clean)
+  Node.js Connect middleware to sanitize user input coming from POST body, GET queries, and url params.
+- [express-mongo-sanitize](https://www.npmjs.com/package/express-mongo-sanitize)
+  Sanitizes user-supplied data to prevent MongoDB Operator Injection.
+- [express-rate-limit](https://www.npmjs.com/package/express-rate-limit)
+  Basic rate-limiting middleware for Express.
+
+```sh
+npm install helmet xss-clean express-mongo-sanitize express-rate-limit
+```
 
 ```js
 server.js

@@ -5,11 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "install-server": "npm install",
-    "install-dependencies": " npm run install-client && npm run install-server ",
-    "build-client": "cd client && npm run build",
+    "install-dependencies": "npm run install-client && npm install",
+    "setup-production": "npm run install-client && npm run build-client && npm install",
     "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
+    "build-client": "cd client && npm run build",
     "server": "nodemon server --ignore client",
     "client": "npm start --prefix client",
     "start": "concurrently --kill-others-on-fail \" npm run server\" \" npm run client\""
@@ -37,8 +36,5 @@
     "morgan": "^1.10.0",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }

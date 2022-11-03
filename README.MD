@@ -5403,34 +5403,221 @@ router.route('/register').post(apiLimiter, register);
 router.route('/login').post(apiLimiter, login);
 ```
 
-#### Deploy To Heroku
+#### Alternative Search with Debounce
 
-- heroku login
+client/components/SearchContainer.js
 
 ```js
+
+import { useState, useMemo } from 'react';
+const SearchContainer = () => {
+  const [localSearch, setLocalSearch] = useState('');
+  const {
+    ....
+  } = useAppContext();
+  const handleSearch = (e) => {
+    handleChange({ name: e.target.name, value: e.target.value });
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    clearFilters();
+  };
+  const debounce = () => {
+    let timeoutID;
+    return (e) => {
+      setLocalSearch(e.target.value);
+      clearTimeout(timeoutID);
+      timeoutID = setTimeout(() => {
+        handleChange({ name: e.target.name, value: e.target.value });
+      }, 1000);
+    };
+  };
+  const optimizedDebounce = useMemo(() => debounce(), []);
+  return (
+    <Wrapper>
+      <form className='form'>
+        <h4>search form</h4>
+        <div className='form-center'>
+          {/* search position */}
+
+          <FormRow
+            type='text'
+            name='search'
+            value={localSearch}
+            handleChange={optimizedDebounce}
+          />
+         ........
+        </div>
+      </form>
+    </Wrapper>
+  );
+};
+
+export default SearchContainer;
+```
+
+#### Test User - Initial Setup
+
+- create new user (test user)
+- populate DB with jobs
+- create a login button
+
+client/pages/Register.js
+
+```js
+const Register = () => {
+  return (
+    <Wrapper className='full-page'>
+      <form className='form' onSubmit={onSubmit}>
+        <button type='submit' className='btn btn-block' disabled={isLoading}>
+          submit
+        </button>
+        <button
+          type='button'
+          className='btn btn-block btn-hipster'
+          disabled={isLoading}
+          onClick={() => {
+            setupUser({
+              currentUser: { email: 'testUser@test.com', password: 'secret' },
+              endPoint: 'login',
+              alertText: 'Login Successful! Redirecting...',
+            });
+          }}
+        >
+          {isLoading ? 'loading...' : 'demo app'}
+        </button>
+      </form>
+    </Wrapper>
+  );
+};
+export default Register;
+```
+
+#### Test User - Restrict Access (server)
+
+- check for test user in auth middleware
+- create new property on user object (true/false)
+- create new middleware (testUser)
+- check for test user, if true send back BadRequest Error
+- add testUser middleware in front of routes you want to restrict access to
+
+middleware/auth.js
+
+```js
+import jwt from 'jsonwebtoken';
+import { UnAuthenticatedError } from '../errors/index.js';
+
+UnAuthenticatedError;
+const auth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer')) {
+    throw new UnAuthenticatedError('Authentication Invalid');
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // TEST USER
+    const testUser = payload.userId === 'testUserID';
+    req.user = { userId: payload.userId, testUser };
+    // TEST USER
+    next();
+  } catch (error) {
+    throw new UnAuthenticatedError('Authentication Invalid');
+  }
+};
+
+export default auth;
+```
+
+middleware/testUser
+
+```js
+import { BadRequestError } from '../errors/index.js';
+
+const testUser = (req, res, next) => {
+  if (req.user.testUser) {
+    throw new BadRequestError('Test User. Read Only!');
+  }
+  next();
+};
+
+export default testUser;
+```
+
+routes/jobsRoutes
+
+```js
+import express from 'express';
+const router = express.Router();
+
+import {
+  createJob,
+  deleteJob,
+  getAllJobs,
+  updateJob,
+  showStats,
+} from '../controllers/jobsController.js';
+
+import testUser from '../middleware/testUser.js';
+
+router.route('/').post(testUser, createJob).get(getAllJobs);
+// remember about :id
+router.route('/stats').get(showStats);
+router.route('/:id').delete(testUser, deleteJob).patch(testUser, updateJob);
+
+export default router;
+```
+
+routes/authRoutes
+
+```js
+import express from 'express';
+const router = express.Router();
+
+import rateLimiter from 'express-rate-limit';
+const apiLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: 'Too many requests from this IP, please try again after 15 minutes',
+});
+
+import { register, login, updateUser } from '../controllers/authController.js';
+import authenticateUser from '../middleware/auth.js';
+import testUser from '../middleware/testUser.js';
+router.route('/register').post(apiLimiter, register);
+router.route('/login').post(apiLimiter, login);
+router.route('/updateUser').patch(authenticateUser, testUser, updateUser);
+
+export default router;
+```
+
+#### Prepare for Deployment
+
+- in client remove build and node_modules
+- in server remove node_modules
+
 package.json
 
-"engines": {
-    "node": "16.x"
-  }
+```json
+
 "scripts":{
-    "build-client": "cd client && npm run build",
-    "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build-client",
+  "setup-production":"npm run install-client && npm run build-client && npm install",
+  "install-client":"cd client && npm install",
 }
+
+
+
 ```
 
-```js
-Procfile
+- node server
+- APP NEEDS TO WORK LOCALLY !!!
 
-web: node server.js
-```
+#### Github Repo
 
-- rm -rf .git
+- create new repo
+- remove all existing repos (CHECK CLIENT !!!)
+- in the root
 - git init
 - git add .
 - git commit -m "first commit"
-- heroku create nameOfTheApp
-- git remote -v
-- add env variables
-- git push heroku main/master
+- push up to Github

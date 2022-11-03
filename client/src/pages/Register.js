@@ -1,58 +1,58 @@
-import { useState, useEffect } from 'react'
-import { Logo, FormRow, Alert } from '../components'
-import Wrapper from '../assets/wrappers/RegisterPage'
-import { useAppContext } from '../context/appContext'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { Logo, FormRow, Alert } from '../components';
+import Wrapper from '../assets/wrappers/RegisterPage';
+import { useAppContext } from '../context/appContext';
+import { useNavigate } from 'react-router-dom';
 const initialState = {
   name: '',
   email: '',
   password: '',
   isMember: true,
-}
+};
 
 const Register = () => {
-  const navigate = useNavigate()
-  const [values, setValues] = useState(initialState)
+  const navigate = useNavigate();
+  const [values, setValues] = useState(initialState);
   const { user, isLoading, showAlert, displayAlert, setupUser } =
-    useAppContext()
+    useAppContext();
 
   const toggleMember = () => {
-    setValues({ ...values, isMember: !values.isMember })
-  }
+    setValues({ ...values, isMember: !values.isMember });
+  };
 
   const handleChange = (e) => {
-    setValues({ ...values, [e.target.name]: e.target.value })
-  }
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
   const onSubmit = (e) => {
-    e.preventDefault()
-    const { name, email, password, isMember } = values
+    e.preventDefault();
+    const { name, email, password, isMember } = values;
     if (!email || !password || (!isMember && !name)) {
-      displayAlert()
-      return
+      displayAlert();
+      return;
     }
-    const currentUser = { name, email, password }
+    const currentUser = { name, email, password };
     if (isMember) {
       setupUser({
         currentUser,
         endPoint: 'login',
         alertText: 'Login Successful! Redirecting...',
-      })
+      });
     } else {
       setupUser({
         currentUser,
         endPoint: 'register',
         alertText: 'User Created! Redirecting...',
-      })
+      });
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
       setTimeout(() => {
-        navigate('/')
-      }, 3000)
+        navigate('/');
+      }, 3000);
     }
-  }, [user, navigate])
+  }, [user, navigate]);
 
   return (
     <Wrapper className='full-page'>
@@ -87,6 +87,20 @@ const Register = () => {
         <button type='submit' className='btn btn-block' disabled={isLoading}>
           submit
         </button>
+        <button
+          type='button'
+          className='btn btn-block btn-hipster'
+          disabled={isLoading}
+          onClick={() => {
+            setupUser({
+              currentUser: { email: 'testUser@test.com', password: 'secret' },
+              endPoint: 'login',
+              alertText: 'Login Successful! Redirecting...',
+            });
+          }}
+        >
+          {isLoading ? 'loading...' : 'demo app'}
+        </button>
         <p>
           {values.isMember ? 'Not a member yet?' : 'Already a member?'}
           <button type='button' onClick={toggleMember} className='member-btn'>
@@ -95,6 +109,6 @@ const Register = () => {
         </p>
       </form>
     </Wrapper>
-  )
-}
-export default Register
+  );
+};
+export default Register;

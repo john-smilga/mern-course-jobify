@@ -5603,6 +5603,9 @@ controllers/authController.js
 
 ```js
 // login controller
+
+const token = user.createJWT();
+
 const oneDay = 1000 * 60 * 60 * 24;
 
 res.cookie('token', token, {

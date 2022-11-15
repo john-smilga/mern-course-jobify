@@ -5736,12 +5736,6 @@ authFetch.interceptors.request.use(
 - remove from setupUser and updateUser (token and local storage functions)
 - remove from the reducer token (COMMAND + F)
 
-#### Test Expiration
-
-```js
-expires: new Date(Date.now() + 5000),
-```
-
 #### GET Current User Route
 
 controllers/authController.js
@@ -5771,7 +5765,7 @@ router.route('/updateUser').patch(authenticateUser, testUser, updateUser);
 router.route('/getCurrentUser').get(authenticateUser, getCurrentUser);
 ```
 
-#### GET Current User Actions
+#### GET Current User - Front-End
 
 actions.js
 
@@ -5803,6 +5797,7 @@ const getCurrentUser = async () => {
       payload: { user, location },
     });
   } catch (error) {
+    if (error.response.status === 401) return;
     logoutUser();
   }
 };
@@ -5824,6 +5819,15 @@ if (action.type === GET_CURRENT_USER_SUCCESS) {
     user: action.payload.user,
     userLocation: action.payload.location,
     jobLocation: action.payload.location,
+  };
+}
+```
+
+```js
+if (action.type === LOGOUT_USER) {
+  return {
+    ...initialState,
+    userLoading: false,
   };
 }
 ```
@@ -5866,6 +5870,12 @@ const Landing = () => {
 export default Landing;
 ```
 
+#### Test Expiration
+
+```js
+expires: new Date(Date.now() + 5000),
+```
+
 #### Logout Route
 
 controllers/authController
@@ -5906,18 +5916,6 @@ const logoutUser = async () => {
   await authFetch.get('/auth/logout');
   dispatch({ type: LOGOUT_USER });
 };
-```
-
-reducer
-
-```js
-if (action.type === LOGOUT_USER) {
-  return {
-    ...initialState,
-    userLoading: false,
-    user: null,
-  };
-}
 ```
 
 #### Prepare for Deployment

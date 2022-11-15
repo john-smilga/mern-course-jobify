@@ -280,6 +280,7 @@ const AppProvider = ({ children }) => {
         payload: { user, location },
       });
     } catch (error) {
+      if (error.response.status === 401) return;
       logoutUser();
     }
   };

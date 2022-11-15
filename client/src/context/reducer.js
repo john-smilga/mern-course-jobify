@@ -84,7 +84,6 @@ const reducer = (state, action) => {
     return {
       ...initialState,
       userLoading: false,
-      user: null,
     };
   }
   if (action.type === UPDATE_USER_BEGIN) {

@@ -5736,6 +5736,19 @@ authFetch.interceptors.request.use(
 - remove from setupUser and updateUser (token and local storage functions)
 - remove from the reducer token (COMMAND + F)
 
+```js
+const logoutUser = async () => {
+    dispatch({ type: LOGOUT_USER });
+    // remove local storage code
+  };
+```
+
+
+#### Test Expiration
+
+```js
+expires: new Date(Date.now() + 5000),
+```
 #### GET Current User Route
 
 controllers/authController.js
@@ -5870,11 +5883,7 @@ const Landing = () => {
 export default Landing;
 ```
 
-#### Test Expiration
 
-```js
-expires: new Date(Date.now() + 5000),
-```
 
 #### Logout Route
 

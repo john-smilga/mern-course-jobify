@@ -5655,7 +5655,7 @@ server.js
 ```js
 import cookieParser from 'cookie-parser';
 
-app.use(mongoSanitize());
+app.use(express.json());
 app.use(cookieParser());
 ```
 

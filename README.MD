@@ -2646,6 +2646,22 @@ const BigSidebar = () => {
 export default BigSidebar;
 ```
 
+#### REACT ROUTER UPDATE !!!
+
+- [Stack Overflow](https://stackoverflow.com/questions/70644361/react-router-dom-v6-shows-active-for-index-as-well-as-other-subroutes)
+
+```js
+<NavLink
+to={path}
+key={id}
+onClick={toggleSidebar}
+className={({ isActive }) =>
+isActive ? 'nav-link active' : 'nav-link'}
+
+end
+>
+```
+
 #### Authenticate User Setup
 
 - create auth.js in <b>middleware</b>
@@ -5738,17 +5754,17 @@ authFetch.interceptors.request.use(
 
 ```js
 const logoutUser = async () => {
-    dispatch({ type: LOGOUT_USER });
-    // remove local storage code
-  };
+  dispatch({ type: LOGOUT_USER });
+  // remove local storage code
+};
 ```
-
 
 #### Test Expiration
 
 ```js
 expires: new Date(Date.now() + 5000),
 ```
+
 #### GET Current User Route
 
 controllers/authController.js
@@ -5882,8 +5898,6 @@ const Landing = () => {
 
 export default Landing;
 ```
-
-
 
 #### Logout Route
 

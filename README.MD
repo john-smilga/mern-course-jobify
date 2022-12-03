@@ -4050,7 +4050,7 @@ import { UnAuthorizedError } from '../errors/index.js';
 const checkPermissions = (requestUser, resourceUserId) => {
   // if (requestUser.role === 'admin') return
   if (requestUser.userId === resourceUserId.toString()) return;
-  throw new CustomError.UnauthorizedError(
+  throw new UnauthorizedError(
     'Not authorized to access this route'
   );
 };
@@ -4069,7 +4069,7 @@ const deleteJob = async (req, res) => {
   const job = await Job.findOne({ _id: jobId });
 
   if (!job) {
-    throw new CustomError.NotFoundError(`No job with id : ${jobId}`);
+    throw new NotFoundError(`No job with id : ${jobId}`);
   }
 
   checkPermissions(req.user, job.createdBy);

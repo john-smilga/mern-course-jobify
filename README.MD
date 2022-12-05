@@ -4022,7 +4022,7 @@ const updateJob = async (req, res) => {
 
   // check permissions
   // req.user.userId (string) === job.createdBy(object)
-  // throw new UnAuthorizedError('Not authorized to access this route')
+  // throw new UnAuthenticatedError('Not authorized to access this route')
 
   // console.log(typeof req.user.userId)
   // console.log(typeof job.createdBy)
@@ -4045,12 +4045,12 @@ const updateJob = async (req, res) => {
 ```js
 checkPermissions.js;
 
-import { UnAuthorizedError } from '../errors/index.js';
+import { UnAuthenticatedError } from '../errors/index.js';
 
 const checkPermissions = (requestUser, resourceUserId) => {
   // if (requestUser.role === 'admin') return
   if (requestUser.userId === resourceUserId.toString()) return;
-  throw new CustomError.UnauthorizedError(
+  throw new CustomError.UnAuthenticatedError(
     'Not authorized to access this route'
   );
 };

@@ -4050,9 +4050,7 @@ import { UnAuthenticatedError } from '../errors/index.js';
 const checkPermissions = (requestUser, resourceUserId) => {
   // if (requestUser.role === 'admin') return
   if (requestUser.userId === resourceUserId.toString()) return;
-  throw new UnauthorizedError(
-    'Not authorized to access this route'
-  );
+  throw new UnauthorizedError('Not authorized to access this route');
 };
 
 export default checkPermissions;
@@ -5449,6 +5447,13 @@ const SearchContainer = () => {
       }, 1000);
     };
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLocalSearch('');
+    clearFilters();
+  };
+
   const optimizedDebounce = useMemo(() => debounce(), []);
   return (
     <Wrapper>

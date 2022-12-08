@@ -497,7 +497,7 @@ export const DISPLAY_ALERT = 'SHOW_ALERT';
 ```js
 appContext.js
 
-const displayAlert() =>{
+const displayAlert = () =>{
   dispatch({type:DISPLAY_ALERT})
 }
 
